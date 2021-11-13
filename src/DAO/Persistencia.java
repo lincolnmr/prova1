@@ -11,7 +11,7 @@ public abstract class Persistencia {
 
     private Connection conexao;
 
-    public Persistencia(){  
+    public Persistencia() {
         conexao = Fabrica.getConexaoNOVA();
         criarSQL();
     }
@@ -19,6 +19,10 @@ public abstract class Persistencia {
     public abstract void InformarDadosBD();
 
     public abstract void mapearParametrosSQL(PreparedStatement ST, ObjetoBase obj) throws SQLException;
+    
+    public abstract void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException;
+
+    public abstract ArrayList<?> mapearModel(ResultSet obj) throws SQLException;
 
     private String tabela;
     private String[] campos;
@@ -52,11 +56,13 @@ public abstract class Persistencia {
     }
 
     public String criarSQL_UPDATE() {
-        String sql = "UPDATE" + tabela + "SET ";
-        for (int i = 0; i < campos.length; i++) {
-            sql = sql + campos[i] + " = ?";
+        String sql = "UPDATE " + tabela + " SET ";
+        for (int i = 1; i < campos.length; i++) {
+            sql = sql + campos[i] + " = ? ";
+            if(i != campos.length-1) 
+                sql = sql + ", ";
         }
-        sql = sql + "WHERE " + campoChave + " = ?";
+        sql = sql + " WHERE " + campoChave + " = ? ";
 
         return sql;
     }
@@ -70,7 +76,7 @@ public abstract class Persistencia {
         String sql = "SELECT * FROM " + tabela + " WHERE " + campoChave + " = ?";
         return sql;
     }
-    
+
     public String criarSQL_RECUPERAR_TODOS() {
         String sql = "SELECT * FROM " + tabela;
         return sql;
@@ -124,7 +130,7 @@ public abstract class Persistencia {
     public void atualizar(ObjetoBase obj) {
         try {
             PreparedStatement ST = conexao.prepareStatement(SQL_UPDATE);
-            mapearParametrosSQL(ST, obj);
+            mapearUpdate(ST, obj);
             ST.executeUpdate();
             conexao.commit();
             System.out.println("Atualizado");
@@ -138,6 +144,7 @@ public abstract class Persistencia {
             PreparedStatement ST = conexao.prepareStatement(SQL_DELETE);
             ST.setInt(1, obj.getId());
             ST.execute();
+            conexao.commit();
             System.out.println("Excluido");
             return true;
         } catch (SQLException err) {
@@ -150,21 +157,13 @@ public abstract class Persistencia {
         ObjetoBase obj = null;
         return obj;
     }
-    
-    public ArrayList<ObjetoBase> recuperarTodos(){
-        ObjetoBase obj = null;
-        ArrayList<ObjetoBase> lista = new ArrayList<>();
 
+    public ArrayList<ObjetoBase>recuperarTodos() {
         try {
             PreparedStatement ST = conexao.prepareStatement(SQL_RECUPERAR_TODOS);
-            mapearParametrosSQL(ST, obj);
             ResultSet objResultSet = ST.executeQuery();
-            while(objResultSet.next()){
-                
-                lista.add(obj);
-            }
-            return lista;
-
+           
+            return (ArrayList<ObjetoBase>) mapearModel(objResultSet);
         } catch (SQLException ex) {
             System.out.println("Erro ao recuperar todos - DAO \n" + ex.getMessage());
         }

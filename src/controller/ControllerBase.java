@@ -22,12 +22,12 @@ public abstract class ControllerBase {
         objDAO.atualizar(objModel);
     }
     
-    public void excluir(int chave){
+    public void excluir(Integer chave){
         objModel.setId(chave);
         objDAO.excluir(objModel);
     }
     
-    public String[] recuperar(int chave){        
+    public String[] recuperar(Integer chave){        
         ObjetoBase obj = objDAO.recuperar(chave);
         if (obj != null)
             return obj.toArray();
@@ -35,18 +35,16 @@ public abstract class ControllerBase {
             return new String[1];
     }
     
-    public String[][] recuperarTodos(){
-        
+    public String[][] recuperarTodos(int quantColunas){
         ArrayList<ObjetoBase> lista = objDAO.recuperarTodos();
         String[][] matrizReturn = null;
-        matrizReturn = new String[lista.size()][7];
-
+        matrizReturn = new String[lista.size()][quantColunas];
+        
         for (int i = 0; i < lista.size(); i++) {
             matrizReturn[i] = lista.get(i).toArray();
         }
         return matrizReturn;
     }
-    
     
     public abstract void instanciarObjetos();
 }

@@ -2,8 +2,10 @@ package DAO;
 
 import model.ObjetoBase;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import model.Extrato;
 
 public class DAOExtrato extends Persistencia {
@@ -31,5 +33,21 @@ public class DAOExtrato extends Persistencia {
         ST.setDouble(4, extrato.getValor());
         ST.setString(5, extrato.getTipo());
         ST.setInt(6, extrato.getCodigoConta());
+    }
+    
+    @Override
+    public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
+        return null;
+    }
+
+    @Override
+    public void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException {
+        Extrato extrato = (Extrato)obj;
+        ST.setTimestamp(1, new Timestamp(extrato.getData().getTimeInMillis()));
+        ST.setString(2, extrato.getDescricao());
+        ST.setDouble(3, extrato.getValor());
+        ST.setString(4, extrato.getTipo());
+        ST.setInt(5, extrato.getCodigoConta());
+        ST.setInt(6, extrato.getCodigo());
     }
 }

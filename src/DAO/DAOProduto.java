@@ -1,8 +1,11 @@
 package DAO;
 
+import Utilitario.Funcoes;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import model.ObjetoBase;
 import model.Produto;
 
@@ -44,4 +47,45 @@ public class DAOProduto extends Persistencia  {
         ST.setDouble(11, produto.getTaxaOperacional());
         ST.setInt(12, produto.getTipoProduto());
     } 
+    
+    @Override
+    public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
+        ArrayList<ObjetoBase> model = new ArrayList<>();
+        ArrayList<Produto> arrayProduto = (ArrayList<Produto>)(ArrayList<?>)(model);
+        
+        while(obj.next()) {
+            Produto produto = new Produto();
+            produto.setCodigo(obj.getInt("prod_codigo"));
+            produto.setNome(obj.getString("prod_nome"));
+            produto.setDescricao(obj.getString("prod_descricao"));
+            produto.setCapacidade(obj.getInt("prod_capacidade"));
+            produto.setDataInicio(Funcoes.toCalendar(obj.getDate("prod_data_inicio")));
+            produto.setDataTermino(Funcoes.toCalendar(obj.getDate("prod_data_termino")));
+            produto.setPrazoVencimento(obj.getInt("prod_prazo_vencimento"));
+            produto.setDiaFechamento(obj.getInt("prod_dia_fechamento"));
+            produto.setValorMinInvestimento(obj.getDouble("prod_valor_min_investimento"));
+            produto.setTaxaFixa(obj.getDouble("prod_taxa_fixa"));
+            produto.setTaxaOperacional(obj.getDouble("prod_taxa_operacional"));
+            produto.setTipoProduto(obj.getInt("prod_tipo"));
+            arrayProduto.add(produto);
+        }
+        return arrayProduto;
+    }
+
+    @Override
+    public void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException {
+        Produto produto = (Produto)obj;
+        ST.setString(1, produto.getNome());
+        ST.setString(2, produto.getDescricao());
+        ST.setInt(3, produto.getCapacidade());
+        ST.setTimestamp(4, new Timestamp(produto.getDataInicio().getTimeInMillis()));
+        ST.setTimestamp(5, new Timestamp(produto.getDataTermino().getTimeInMillis()));
+        ST.setInt(6, produto.getPrazoVencimento());
+        ST.setInt(7, produto.getDiaFechamento());
+        ST.setDouble(8, produto.getValorMinInvestimento());
+        ST.setDouble(9, produto.getTaxaFixa());
+        ST.setDouble(10, produto.getTaxaOperacional());
+        ST.setInt(11, produto.getTipoProduto());
+        ST.setInt(12, produto.getCodigo());
+    }
 }

@@ -1,11 +1,13 @@
 package DAO;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import model.Clientes;
 import model.ObjetoBase;
 
-public class DAOClientes extends Persistencia  {
+public class DAOClientes extends Persistencia {
 
     @Override
     public void InformarDadosBD() {
@@ -27,7 +29,7 @@ public class DAOClientes extends Persistencia  {
 
     @Override
     public void mapearParametrosSQL(PreparedStatement ST, ObjetoBase obj) throws SQLException {
-        Clientes clientes = (Clientes)obj;
+        Clientes clientes = (Clientes) obj;
         ST.setInt(1, clientes.getCodigo());
         ST.setString(2, clientes.getNome());
         ST.setString(3, clientes.getCpf());
@@ -38,5 +40,42 @@ public class DAOClientes extends Persistencia  {
         ST.setString(8, clientes.getCidade());
         ST.setString(9, clientes.getTelefone());
         ST.setString(10, clientes.getEmail());
-    }   
+    }
+
+    @Override
+    public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
+        ArrayList<ObjetoBase> model = new ArrayList<>();
+        ArrayList<Clientes> arrayClientes = (ArrayList<Clientes>)(ArrayList<?>)(model);
+        
+        while(obj.next()) {
+            Clientes cliente = new Clientes();
+            cliente.setCodigo(obj.getInt("cli_codigo"));
+            cliente.setNome(obj.getString("cli_nome"));
+            cliente.setCpf(obj.getString("cli_cpf"));
+            cliente.setRg(obj.getString("cli_rg"));
+            cliente.setCnpj(obj.getString("cli_cnpj"));
+            cliente.setInscricaoEstadual(obj.getString("cli_inscr_estadual"));
+            cliente.setEndereco(obj.getString("cli_endereco"));
+            cliente.setCidade(obj.getString("cli_cidade"));
+            cliente.setTelefone(obj.getString("cli_telefone"));
+            cliente.setEmail(obj.getString("cli_email"));
+            arrayClientes.add(cliente);
+        }
+        return arrayClientes;
+    }
+
+    @Override
+    public void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException {
+        Clientes clientes = (Clientes) obj;
+        ST.setString(1, clientes.getNome());
+        ST.setString(2, clientes.getCpf());
+        ST.setString(3, clientes.getRg());
+        ST.setString(4, clientes.getCnpj());
+        ST.setString(5, clientes.getInscricaoEstadual());
+        ST.setString(6, clientes.getEndereco());
+        ST.setString(7, clientes.getCidade());
+        ST.setString(8, clientes.getTelefone());
+        ST.setString(9, clientes.getEmail());
+        ST.setInt(10, clientes.getCodigo());
+    }
 }
