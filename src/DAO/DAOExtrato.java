@@ -1,5 +1,6 @@
 package DAO;
 
+import Utilitario.Funcoes;
 import model.ObjetoBase;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -37,7 +38,20 @@ public class DAOExtrato extends Persistencia {
     
     @Override
     public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
-        return null;
+       ArrayList<ObjetoBase> model = new ArrayList<>();
+        ArrayList<Extrato> extratos = (ArrayList<Extrato>) (ArrayList<?>) (model);
+
+        while (obj.next()) {
+            Extrato extrato = new Extrato();
+            extrato.setCodigo(obj.getInt("ext_codigo"));
+            extrato.setData(Funcoes.toCalendar(obj.getDate("ext_data")));
+            extrato.setDescricao(obj.getString("ext_descricao"));
+            extrato.setValor(obj.getDouble("ext_valor"));
+            extrato.setTipo(obj.getString("ext_tipo"));
+            extrato.setCodigoConta(obj.getInt("ext_cod_conta"));
+            extratos.add(extrato);
+        }
+        return extratos;
     }
 
     @Override
@@ -49,5 +63,10 @@ public class DAOExtrato extends Persistencia {
         ST.setString(4, extrato.getTipo());
         ST.setInt(5, extrato.getCodigoConta());
         ST.setInt(6, extrato.getCodigo());
+    }
+
+    @Override
+    public ObjetoBase recuperar(ResultSet obj) throws SQLException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 }

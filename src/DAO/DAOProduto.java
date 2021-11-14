@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import model.ObjetoBase;
 import model.Produto;
 
-public class DAOProduto extends Persistencia  {
+public class DAOProduto extends Persistencia {
 
     @Override
     public void InformarDadosBD() {
@@ -33,7 +33,7 @@ public class DAOProduto extends Persistencia  {
 
     @Override
     public void mapearParametrosSQL(PreparedStatement ST, ObjetoBase obj) throws SQLException {
-        Produto produto = (Produto)obj;
+        Produto produto = (Produto) obj;
         ST.setInt(1, produto.getCodigo());
         ST.setString(2, produto.getNome());
         ST.setString(3, produto.getDescricao());
@@ -46,14 +46,14 @@ public class DAOProduto extends Persistencia  {
         ST.setDouble(10, produto.getTaxaFixa());
         ST.setDouble(11, produto.getTaxaOperacional());
         ST.setInt(12, produto.getTipoProduto());
-    } 
-    
+    }
+
     @Override
     public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
         ArrayList<ObjetoBase> model = new ArrayList<>();
-        ArrayList<Produto> arrayProduto = (ArrayList<Produto>)(ArrayList<?>)(model);
-        
-        while(obj.next()) {
+        ArrayList<Produto> arrayProduto = (ArrayList<Produto>) (ArrayList<?>) (model);
+
+        while (obj.next()) {
             Produto produto = new Produto();
             produto.setCodigo(obj.getInt("prod_codigo"));
             produto.setNome(obj.getString("prod_nome"));
@@ -74,7 +74,7 @@ public class DAOProduto extends Persistencia  {
 
     @Override
     public void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException {
-        Produto produto = (Produto)obj;
+        Produto produto = (Produto) obj;
         ST.setString(1, produto.getNome());
         ST.setString(2, produto.getDescricao());
         ST.setInt(3, produto.getCapacidade());
@@ -87,5 +87,24 @@ public class DAOProduto extends Persistencia  {
         ST.setDouble(10, produto.getTaxaOperacional());
         ST.setInt(11, produto.getTipoProduto());
         ST.setInt(12, produto.getCodigo());
+    }
+
+    @Override
+    public ObjetoBase recuperar(ResultSet obj) throws SQLException {
+        Produto produto = new Produto();
+        obj.next();
+        produto.setCodigo(obj.getInt("prod_codigo"));
+        produto.setNome(obj.getString("prod_nome"));
+        produto.setDescricao(obj.getString("prod_descricao"));
+        produto.setCapacidade(obj.getInt("prod_capacidade"));
+        produto.setDataInicio(Funcoes.toCalendar(obj.getDate("prod_data_inicio")));
+        produto.setDataTermino(Funcoes.toCalendar(obj.getDate("prod_data_termino")));
+        produto.setPrazoVencimento(obj.getInt("prod_prazo_vencimento"));
+        produto.setDiaFechamento(obj.getInt("prod_dia_fechamento"));
+        produto.setValorMinInvestimento(obj.getDouble("prod_valor_min_investimento"));
+        produto.setTaxaFixa(obj.getDouble("prod_taxa_fixa"));
+        produto.setTaxaOperacional(obj.getDouble("prod_taxa_operacional"));
+        produto.setTipoProduto(obj.getInt("prod_tipo"));
+        return produto;
     }
 }

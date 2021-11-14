@@ -83,7 +83,7 @@ public class Extrato extends ObjetoBase {
         setDescricao(dados[2]);
         setValor(Double.parseDouble(dados[3]));
         setTipo(dados[4]);
-        setCodigoConta(Integer.parseInt(dados[3]));
+        setCodigoConta(Integer.parseInt(dados[5]));
         return this;
     }  
 }

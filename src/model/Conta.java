@@ -73,8 +73,8 @@ public class Conta extends ObjetoBase {
         array[2] = getNumero();
         array[3] = getAgencia();
         array[4] = String.valueOf(getSaldo());
-        array[5] = String.valueOf(isContaInvestimento());
-        array[6] = String.valueOf(isAtivo());
+        array[5] = isContaInvestimento() ? "Sim" : "Não";
+        array[6] = isAtivo() ? "Sim" : "Não";
         return array;
     }
 

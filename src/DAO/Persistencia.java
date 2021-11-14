@@ -23,6 +23,8 @@ public abstract class Persistencia {
     public abstract void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException;
 
     public abstract ArrayList<?> mapearModel(ResultSet obj) throws SQLException;
+    
+    public abstract ObjetoBase recuperar(ResultSet obj) throws SQLException;
 
     private String tabela;
     private String[] campos;
@@ -78,7 +80,7 @@ public abstract class Persistencia {
     }
 
     public String criarSQL_RECUPERAR_TODOS() {
-        String sql = "SELECT * FROM " + tabela;
+        String sql = "SELECT * FROM " + tabela + " ORDER BY " + campos[0] + " DESC ";
         return sql;
     }
 
@@ -153,9 +155,17 @@ public abstract class Persistencia {
         return false;
     }
 
-    public ObjetoBase recuperar(int chave) {
-        ObjetoBase obj = null;
-        return obj;
+    public ObjetoBase recuperar(Integer chave) {
+        try {
+            PreparedStatement ST = conexao.prepareStatement(SQL_RECUPERAR);
+            ST.setInt(1, chave);
+            ResultSet objResultSet = ST.executeQuery();
+            System.out.println();
+            return  recuperar(objResultSet);
+        } catch (SQLException ex) {
+            System.out.println("Erro ao recuperar - DAO \n" + ex.getMessage());
+        }
+        return null;
     }
 
     public ArrayList<ObjetoBase>recuperarTodos() {

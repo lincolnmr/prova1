@@ -26,7 +26,7 @@ public class DAOConta extends Persistencia {
 
     @Override
     public void mapearParametrosSQL(PreparedStatement ST, ObjetoBase obj) throws SQLException {
-        Conta conta = (Conta)obj;
+        Conta conta = (Conta) obj;
         ST.setInt(1, conta.getCodigo());
         ST.setString(2, conta.getDescricao());
         ST.setString(3, conta.getNumero());
@@ -36,9 +36,9 @@ public class DAOConta extends Persistencia {
         ST.setBoolean(7, conta.isAtivo());
     }
 
+    @Override
     public void mapearUpdate(PreparedStatement ST, ObjetoBase obj) throws SQLException {
-        Conta conta = (Conta)obj;
-        
+        Conta conta = (Conta) obj;
         ST.setString(1, conta.getDescricao());
         ST.setString(2, conta.getNumero());
         ST.setString(3, conta.getAgencia());
@@ -47,13 +47,13 @@ public class DAOConta extends Persistencia {
         ST.setBoolean(6, conta.isAtivo());
         ST.setInt(7, conta.getCodigo());
     }
-    
+
     @Override
-    public ArrayList<?> mapearModel(ResultSet obj) throws SQLException{
+    public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
         ArrayList<ObjetoBase> model = new ArrayList<>();
-        ArrayList<Conta> contas = (ArrayList<Conta>)(ArrayList<?>)(model);
-        
-        while(obj.next()) {
+        ArrayList<Conta> contas = (ArrayList<Conta>) (ArrayList<?>) (model);
+
+        while (obj.next()) {
             Conta conta = new Conta();
             conta.setCodigo(obj.getInt("con_codigo"));
             conta.setDescricao(obj.getString("con_descricao"));
@@ -65,5 +65,19 @@ public class DAOConta extends Persistencia {
             contas.add(conta);
         }
         return contas;
+    }
+
+    @Override
+    public ObjetoBase recuperar(ResultSet obj) throws SQLException {
+        Conta conta = new Conta();
+        obj.next();
+        conta.setCodigo(obj.getInt("con_codigo"));
+        conta.setDescricao(obj.getString("con_descricao"));
+        conta.setNumero(obj.getString("con_numero_conta"));
+        conta.setAgencia(obj.getString("con_agencia"));
+        conta.setSaldo(obj.getDouble("con_saldo"));
+        conta.setContaInvestimento(obj.getBoolean("con_conta_investimento"));
+        conta.setAtivo(obj.getBoolean("con_ativo"));
+        return conta;
     }
 }

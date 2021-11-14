@@ -26,10 +26,16 @@ public class Funcoes {
     }
 
     public static Calendar toCalendar(Date date) {
-        TimeZone zone = TimeZone.getTimeZone("GMT-03:00");
-        Locale locale = new Locale("pt", "BR");
-        Calendar c = Calendar.getInstance(zone, locale);
+        Calendar c = Calendar.getInstance();
         c.setTime(date);
+        c.add(Calendar.DATE, 1);
         return c;
     }
+
+    public static String now() {
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        return sdf.format(cal.getTime());
+    }
+
 }

@@ -45,9 +45,9 @@ public class DAOClientes extends Persistencia {
     @Override
     public ArrayList<?> mapearModel(ResultSet obj) throws SQLException {
         ArrayList<ObjetoBase> model = new ArrayList<>();
-        ArrayList<Clientes> arrayClientes = (ArrayList<Clientes>)(ArrayList<?>)(model);
-        
-        while(obj.next()) {
+        ArrayList<Clientes> arrayClientes = (ArrayList<Clientes>) (ArrayList<?>) (model);
+
+        while (obj.next()) {
             Clientes cliente = new Clientes();
             cliente.setCodigo(obj.getInt("cli_codigo"));
             cliente.setNome(obj.getString("cli_nome"));
@@ -77,5 +77,22 @@ public class DAOClientes extends Persistencia {
         ST.setString(8, clientes.getTelefone());
         ST.setString(9, clientes.getEmail());
         ST.setInt(10, clientes.getCodigo());
+    }
+
+    @Override
+    public ObjetoBase recuperar(ResultSet obj) throws SQLException {
+        Clientes cliente = new Clientes();
+        obj.next();
+        cliente.setCodigo(obj.getInt("cli_codigo"));
+        cliente.setNome(obj.getString("cli_nome"));
+        cliente.setCpf(obj.getString("cli_cpf"));
+        cliente.setRg(obj.getString("cli_rg"));
+        cliente.setCnpj(obj.getString("cli_cnpj"));
+        cliente.setInscricaoEstadual(obj.getString("cli_inscr_estadual"));
+        cliente.setEndereco(obj.getString("cli_endereco"));
+        cliente.setCidade(obj.getString("cli_cidade"));
+        cliente.setTelefone(obj.getString("cli_telefone"));
+        cliente.setEmail(obj.getString("cli_email"));
+        return cliente;
     }
 }

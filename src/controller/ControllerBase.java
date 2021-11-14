@@ -27,7 +27,7 @@ public abstract class ControllerBase {
         objDAO.excluir(objModel);
     }
     
-    public String[] recuperar(Integer chave){        
+    public String[] recuperar(Integer chave){     
         ObjetoBase obj = objDAO.recuperar(chave);
         if (obj != null)
             return obj.toArray();

@@ -1,6 +1,7 @@
 package controller;
 
 import DAO.DAOConta;
+import javax.swing.JTextField;
 import model.Conta;
 
 public class CtrlConta extends ControllerBase {

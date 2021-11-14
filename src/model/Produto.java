@@ -3,9 +3,10 @@ package model;
 import Utilitario.Funcoes;
 import java.text.ParseException;
 import java.util.Calendar;
+import javax.swing.JOptionPane;
 
-public class Produto extends ObjetoBase{
-    
+public class Produto extends ObjetoBase {
+
     private int codigo;
     private String nome;
     private String descricao;
@@ -130,7 +131,7 @@ public class Produto extends ObjetoBase{
         array[9] = String.valueOf(getTaxaFixa());
         array[10] = String.valueOf(getTaxaOperacional());
         array[11] = String.valueOf(getTipoProduto());
-        return array;  
+        return array;
     }
 
     @Override
@@ -143,13 +144,19 @@ public class Produto extends ObjetoBase{
             setDataInicio(Funcoes.stringToDate(dados[4]));
             setDataTermino(Funcoes.stringToDate(dados[5]));
         } catch (ParseException ex) {
-             System.out.println("Não foi possivel converter data. Model Produto: " + ex);
+            System.out.println("Não foi possivel converter data. Model Produto: " + ex);
         }
         setPrazoVencimento(Integer.parseInt(dados[6]));
         setDiaFechamento(Integer.parseInt(dados[7]));
         setValorMinInvestimento(Double.parseDouble(dados[8]));
-        setTaxaFixa(Double.parseDouble(dados[9]));
-        setTaxaOperacional(Double.parseDouble(dados[10]));
+
+        try {
+            setTaxaFixa(Double.parseDouble(dados[9]));
+            setTaxaOperacional(Double.parseDouble(dados[10]));
+        } catch (Exception e) {
+            System.out.println("Não foi possivel converter taxas vazias. Model Produto: " + e);
+        }
+
         setTipoProduto(Integer.parseInt(dados[11]));
         return this;
     }

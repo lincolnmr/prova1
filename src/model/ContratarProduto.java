@@ -76,6 +76,7 @@ public class ContratarProduto extends ObjetoBase{
     @Override
     public ObjetoBase arrayTo(String[] dados) {
         setCodigo(Integer.parseInt(dados[0]));
+        System.out.println("BVCVXC" + dados[1]);
         setCodigoCliente(Integer.parseInt(dados[1]));
         setCodigoProduto(Integer.parseInt(dados[2]));
         try {

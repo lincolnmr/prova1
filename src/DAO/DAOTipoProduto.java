@@ -54,4 +54,15 @@ public class DAOTipoProduto extends Persistencia {
         ST.setDouble(3, tipoProduto.getTaxaRentabilidade());
         ST.setInt(4, tipoProduto.getCodigo());
     }
+
+    @Override
+    public ObjetoBase recuperar(ResultSet obj) throws SQLException {
+        TipoProduto tipoProd = new TipoProduto();
+        obj.next();
+        tipoProd.setCodigo(obj.getInt("tipo_codigo"));
+        tipoProd.setNome(obj.getString("tipo_nome"));
+        tipoProd.setModalidade(obj.getString("tipo_modalidade"));
+        tipoProd.setTaxaRentabilidade(obj.getDouble("tipo_taxa_rentabilidade"));
+        return tipoProd;
+    }
 }
