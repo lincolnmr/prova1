@@ -9,6 +9,5 @@ public class CtrlExtrato extends ControllerBase {
     public void instanciarObjetos() {
         objModel = new Extrato();
         objDAO =  new DAOExtrato();
-    }
-    
+    }  
 }

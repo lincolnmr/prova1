@@ -160,7 +160,6 @@ public abstract class Persistencia {
             PreparedStatement ST = conexao.prepareStatement(SQL_RECUPERAR);
             ST.setInt(1, chave);
             ResultSet objResultSet = ST.executeQuery();
-            System.out.println();
             return  recuperar(objResultSet);
         } catch (SQLException ex) {
             System.out.println("Erro ao recuperar - DAO \n" + ex.getMessage());

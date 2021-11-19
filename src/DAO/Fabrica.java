@@ -20,7 +20,7 @@ public class Fabrica {
         try {
             Class.forName(DRIVER);
             conexao = DriverManager.getConnection(urlconexao, usuario, senha);
-            System.out.println("Conexão efetuada com sucesso!!!");
+            //System.out.println("Conexão efetuada com sucesso!!!");
         } catch (ClassNotFoundException ex) {
             System.out.println("Erro ao carregar driver de conexão\n" + ex.getMessage());
         } catch (SQLException ex) {

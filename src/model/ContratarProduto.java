@@ -1,8 +1,9 @@
 package model;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import java.text.ParseException;
 import java.util.Calendar;
+import org.json.simple.JSONArray;
 
 public class ContratarProduto extends ObjetoBase{
     
@@ -62,32 +63,41 @@ public class ContratarProduto extends ObjetoBase{
     }
 
     @Override
-    public String[] toArray() {
+    public JSONArray toJson() {
+        JSONArray arrayJSON = new JSONArray();
+        arrayJSON.add(String.valueOf(getCodigo()));
+        arrayJSON.add(String.valueOf(getCodigoCliente()));
+        arrayJSON.add(String.valueOf(getCodigoProduto()));
+        arrayJSON.add(FuncoesData.dateToString(getDataContratacao()));
+        arrayJSON.add(FuncoesData.dateToString(getDataLiquidacao()));
+        arrayJSON.add(String.valueOf(getCodigoConta()));
+        return arrayJSON;
+    }
+
+    @Override
+    public ObjetoBase jsonTo(JSONArray dados) {
+        setCodigo(Integer.parseInt(String.valueOf(dados.get(0))));
+        setCodigoCliente(Integer.parseInt(String.valueOf(dados.get(1))));
+        setCodigoProduto(Integer.parseInt(String.valueOf(dados.get(2))));
+        try {
+            setDataContratacao(FuncoesData.stringToDate(String.valueOf(dados.get(3))));
+            setDataLiquidacao(FuncoesData.stringToDate(String.valueOf(dados.get(4))));
+        } catch (ParseException ex) {
+            System.out.println("Não foi possivel converter data. Model ContratarProduto: " + ex);
+        }
+        setCodigoConta(Integer.parseInt(String.valueOf(dados.get(5))));
+        return this;
+    }
+    
+    @Override
+    public String[] preencheTabela() {
         String[] array = new String[6];
         array[0] = String.valueOf(getCodigo());
         array[1] = String.valueOf(getCodigoCliente());
         array[2] = String.valueOf(getCodigoProduto());
-        array[3] = Funcoes.dateToString(getDataContratacao());
-        array[4] = Funcoes.dateToString(getDataLiquidacao());
+        array[3] = FuncoesData.dateToString(getDataContratacao());
+        array[4] = FuncoesData.dateToString(getDataLiquidacao());
         array[5] = String.valueOf(getCodigoConta());
         return array;
     }
-
-    @Override
-    public ObjetoBase arrayTo(String[] dados) {
-        setCodigo(Integer.parseInt(dados[0]));
-        System.out.println("BVCVXC" + dados[1]);
-        setCodigoCliente(Integer.parseInt(dados[1]));
-        setCodigoProduto(Integer.parseInt(dados[2]));
-        try {
-            setDataContratacao(Funcoes.stringToDate(dados[3]));
-            setDataLiquidacao(Funcoes.stringToDate(dados[4]));
-        } catch (ParseException ex) {
-            System.out.println("Não foi possivel converter data. Model ContratarProduto: " + ex);
-        }
-        setCodigoConta(Integer.parseInt(dados[5]));
-        return this;
-    }
-    
-    
 }

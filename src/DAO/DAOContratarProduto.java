@@ -1,6 +1,6 @@
 package DAO;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -46,8 +46,8 @@ public class DAOContratarProduto extends Persistencia {
             contrProd.setCodigo(obj.getInt("contr_codigo"));
             contrProd.setCodigoCliente(obj.getInt("contr_cod_cliente"));
             contrProd.setCodigoProduto(obj.getInt("contr_cod_produto"));
-            contrProd.setDataContratacao(Funcoes.toCalendar(obj.getDate("contr_data_contratacao")));
-            contrProd.setDataLiquidacao(Funcoes.toCalendar(obj.getDate("contr_data_liquidacao")));
+            contrProd.setDataContratacao(FuncoesData.toCalendar(obj.getDate("contr_data_contratacao")));
+            contrProd.setDataLiquidacao(FuncoesData.toCalendar(obj.getDate("contr_data_liquidacao")));
             contrProd.setCodigoConta(obj.getInt("contr_conta_associada"));
             arrayContrProd.add(contrProd);
         }
@@ -72,8 +72,8 @@ public class DAOContratarProduto extends Persistencia {
         contrProd.setCodigo(obj.getInt("contr_codigo"));
         contrProd.setCodigoCliente(obj.getInt("contr_cod_cliente"));
         contrProd.setCodigoProduto(obj.getInt("contr_cod_produto"));
-        contrProd.setDataContratacao(Funcoes.toCalendar(obj.getDate("contr_data_contratacao")));
-        contrProd.setDataLiquidacao(Funcoes.toCalendar(obj.getDate("contr_data_liquidacao")));
+        contrProd.setDataContratacao(FuncoesData.toCalendar(obj.getDate("contr_data_contratacao")));
+        contrProd.setDataLiquidacao(FuncoesData.toCalendar(obj.getDate("contr_data_liquidacao")));
         contrProd.setCodigoConta(obj.getInt("contr_conta_associada"));
         return contrProd;
     }

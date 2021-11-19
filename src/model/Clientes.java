@@ -1,5 +1,7 @@
 package model;
 
+import org.json.simple.JSONArray;
+
 public class Clientes extends ObjetoBase{
 
     private int codigo;
@@ -94,7 +96,38 @@ public class Clientes extends ObjetoBase{
     }
 
     @Override
-    public String[] toArray() {
+    public JSONArray toJson() {
+        JSONArray arrayJSON = new JSONArray();
+        arrayJSON.add(String.valueOf(getCodigo()));
+        arrayJSON.add(getNome());
+        arrayJSON.add(getCpf());
+        arrayJSON.add(getRg());
+        arrayJSON.add(getCnpj());
+        arrayJSON.add(getInscricaoEstadual());
+        arrayJSON.add(getEndereco());
+        arrayJSON.add(getCidade());
+        arrayJSON.add(getTelefone());
+        arrayJSON.add(getEmail());
+        return arrayJSON;
+    }
+
+    @Override
+    public ObjetoBase jsonTo(JSONArray dados) {
+        setCodigo(Integer.parseInt(String.valueOf(dados.get(0))));
+        setNome(String.valueOf(dados.get(1)));
+        setCpf(String.valueOf(dados.get(2)));
+        setRg(String.valueOf(dados.get(3)));
+        setCnpj(String.valueOf(dados.get(4)));
+        setInscricaoEstadual(String.valueOf(dados.get(5)));
+        setEndereco(String.valueOf(dados.get(6)));
+        setCidade(String.valueOf(dados.get(7)));
+        setTelefone(String.valueOf(dados.get(8)));
+        setEmail(String.valueOf(dados.get(9)));
+        return this;
+    }
+    
+    @Override
+    public String[] preencheTabela() {
         String[] array = new String[10];
         array[0] = String.valueOf(getCodigo());
         array[1] = getNome();
@@ -108,19 +141,4 @@ public class Clientes extends ObjetoBase{
         array[9] = getEmail();
         return array;
     }
-
-    @Override
-    public ObjetoBase arrayTo(String[] dados) {
-        setCodigo(Integer.parseInt(dados[0]));
-        setNome(dados[1]);
-        setCpf(dados[2]);
-        setRg(dados[3]);
-        setCnpj(dados[4]);
-        setInscricaoEstadual(dados[5]);
-        setEndereco(dados[6]);
-        setCidade(dados[7]);
-        setTelefone(dados[8]);
-        setEmail(dados[9]);
-        return this;
-    } 
 }

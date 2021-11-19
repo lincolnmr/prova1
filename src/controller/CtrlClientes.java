@@ -10,5 +10,4 @@ public class CtrlClientes extends ControllerBase{
         objModel = new Clientes();
         objDAO = new DAOClientes();
     }
-    
 }

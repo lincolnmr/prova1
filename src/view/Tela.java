@@ -1,9 +1,9 @@
 package view;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import controller.CtrlConta;
 import controller.CtrlExtrato;
-import Utilitario.TransferenciaContas;
+import Facade.Movimentacoes;
 import controller.CtrlClientes;
 import controller.CtrlContratarProduto;
 import controller.CtrlProduto;
@@ -12,10 +12,9 @@ import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
+import org.json.simple.JSONArray;
 import static view.Extrato.tabelaExtrato;
 
 public class Tela extends javax.swing.JFrame {
@@ -27,6 +26,9 @@ public class Tela extends javax.swing.JFrame {
     private CtrlExtrato ctrlExtrato;
     private CtrlProduto ctrlProduto;
     private boolean controle = true;
+
+    public static final String agenciaContaCorrente = "01";
+    public static final String agenciaContaInvestimento = "02";
 
     private int tipoCliente = 0;
 
@@ -130,6 +132,7 @@ public class Tela extends javax.swing.JFrame {
         descricaoProduto = new javax.swing.JTextArea();
         dataInicioProduto = new javax.swing.JFormattedTextField();
         dataTerminoProduto = new javax.swing.JFormattedTextField();
+        produtoProcessamento = new javax.swing.JToggleButton();
         painelContratarProduto = new javax.swing.JPanel();
         novoContratarProd = new javax.swing.JButton();
         gravaContrataProd = new javax.swing.JButton();
@@ -327,11 +330,6 @@ public class Tela extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        telefoneCliente.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                telefoneClienteActionPerformed(evt);
-            }
-        });
 
         javax.swing.GroupLayout painelClientesLayout = new javax.swing.GroupLayout(painelClientes);
         painelClientes.setLayout(painelClientesLayout);
@@ -558,9 +556,9 @@ public class Tela extends javax.swing.JFrame {
                     .addGroup(painelContaLayout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addGap(5, 5, 5)
-                        .addGroup(painelContaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(agenciaConta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(cbInvestimento))
+                        .addGroup(painelContaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(cbInvestimento, javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(agenciaConta, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(painelContaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel26)
@@ -788,9 +786,11 @@ public class Tela extends javax.swing.JFrame {
         } catch (java.text.ParseException ex) {
             ex.printStackTrace();
         }
-        dataTerminoProduto.addActionListener(new java.awt.event.ActionListener() {
+
+        produtoProcessamento.setText("Processamento");
+        produtoProcessamento.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                dataTerminoProdutoActionPerformed(evt);
+                produtoProcessamentoActionPerformed(evt);
             }
         });
 
@@ -798,21 +798,6 @@ public class Tela extends javax.swing.JFrame {
         painelProduto.setLayout(painelProdutoLayout);
         painelProdutoLayout.setHorizontalGroup(
             painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(painelProdutoLayout.createSequentialGroup()
-                .addGroup(painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(painelProdutoLayout.createSequentialGroup()
-                        .addGap(10, 10, 10)
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(painelProdutoLayout.createSequentialGroup()
-                        .addGap(189, 189, 189)
-                        .addComponent(novoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(28, 28, 28)
-                        .addComponent(gravaProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(34, 34, 34)
-                        .addComponent(editaProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(39, 39, 39)
-                        .addComponent(excluiProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(25, 25, 25))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelProdutoLayout.createSequentialGroup()
                 .addGroup(painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(painelProdutoLayout.createSequentialGroup()
@@ -848,6 +833,23 @@ public class Tela extends javax.swing.JFrame {
                         .addComponent(jLabel9))
                     .addComponent(jScrollPane8, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(117, 117, 117))
+            .addGroup(painelProdutoLayout.createSequentialGroup()
+                .addGroup(painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(painelProdutoLayout.createSequentialGroup()
+                        .addGap(10, 10, 10)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 773, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(painelProdutoLayout.createSequentialGroup()
+                        .addGap(121, 121, 121)
+                        .addComponent(novoProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(28, 28, 28)
+                        .addComponent(gravaProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(34, 34, 34)
+                        .addComponent(editaProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(39, 39, 39)
+                        .addComponent(excluiProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(32, 32, 32)
+                        .addComponent(produtoProcessamento)))
+                .addGap(25, 25, 25))
         );
         painelProdutoLayout.setVerticalGroup(
             painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -913,7 +915,9 @@ public class Tela extends javax.swing.JFrame {
                     .addComponent(novoProduto)
                     .addComponent(gravaProduto)
                     .addComponent(editaProduto)
-                    .addComponent(excluiProduto)))
+                    .addGroup(painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(excluiProduto)
+                        .addComponent(produtoProcessamento))))
         );
 
         jPBanco.addTab("Produtos", painelProduto);
@@ -1340,106 +1344,114 @@ public class Tela extends javax.swing.JFrame {
     }
 
     private void vinculaClienteConta() {
-        String[] dados = new String[7];
-        dados[0] = "0";
-        dados[1] = "Conta gerada pelo cadastro do cliente";
-        dados[2] = gerarNumeroConta();
-        dados[3] = "01";
-        dados[4] = "0";
-        dados[5] = String.valueOf("false");
-        dados[6] = String.valueOf("true");
-        ctrlConta.inserir(dados);
+
+        JSONArray arrayJSON = new JSONArray();
+        arrayJSON.add("0");
+        arrayJSON.add("Conta gerada pelo cadastro do cliente");
+        arrayJSON.add(gerarNumeroConta());
+        arrayJSON.add(agenciaContaCorrente);
+        arrayJSON.add("0");
+        arrayJSON.add("false");
+        arrayJSON.add("true");
+        ctrlConta.inserir(arrayJSON);
+
+        arrayJSON.removeAll(arrayJSON);
 
         String[][] cliente = ctrlClientes.recuperarTodos(7);
         String[][] conta = ctrlConta.recuperarTodos(12);
-        String[] contrataProd = new String[7];
-        contrataProd[0] = "0";
-        contrataProd[1] = cliente[0][0];
-        contrataProd[2] = "4";
-        contrataProd[3] = Funcoes.now();
-        contrataProd[4] = "24/12/2023";
-        contrataProd[5] = conta[0][0];
-        ctrlContratarProduto.inserir(contrataProd);
+        arrayJSON.add("0");
+        arrayJSON.add(cliente[0][0]);
+        arrayJSON.add("4");
+        arrayJSON.add(FuncoesData.now());
+        arrayJSON.add(FuncoesData.somaUmAno());
+        arrayJSON.add(conta[0][0]);
+        ctrlContratarProduto.inserir(arrayJSON);
     }
 
     private void gravaCliente() {
-        String[] dados = new String[10];
+        JSONArray arrayJSON = new JSONArray();
         int iLinha = tabelaCliente.getSelectedRow();
 
         if (controle) {
-            dados[0] = "0";
-            dados[1] = nomeCliente.getText();
-            dados[2] = cpfCliente.getText();
-            dados[3] = rgCliente.getText();
-            dados[4] = cnpjCliente.getText();
-            dados[5] = inscEstadualCliente.getText();
-            dados[6] = enderecoCliente.getText();
-            dados[7] = cidadeCliente.getText();
-            dados[8] = telefoneCliente.getText();
-            dados[9] = emailCliente.getText();
-            ctrlClientes.inserir(dados);
+            arrayJSON.add("0");
+            arrayJSON.add(nomeCliente.getText());
+            arrayJSON.add(cpfCliente.getText());
+            arrayJSON.add(rgCliente.getText());
+            arrayJSON.add(cnpjCliente.getText());
+            arrayJSON.add(inscEstadualCliente.getText());
+            arrayJSON.add(enderecoCliente.getText());
+            arrayJSON.add(cidadeCliente.getText());
+            arrayJSON.add(telefoneCliente.getText());
+            arrayJSON.add(emailCliente.getText());
+            ctrlClientes.inserir(arrayJSON);
             vinculaClienteConta();
+            JOptionPane.showMessageDialog(null, "Cliente inserido com sucesso");
         } else {
-            dados[0] = (String) tabelaCliente.getValueAt(iLinha, 0);
-            dados[1] = nomeCliente.getText();
-            dados[2] = cpfCliente.getText();
-            dados[3] = rgCliente.getText();
-            dados[4] = cnpjCliente.getText();
-            dados[5] = inscEstadualCliente.getText();
-            dados[6] = enderecoCliente.getText();
-            dados[7] = cidadeCliente.getText();
-            dados[8] = telefoneCliente.getText();
-            dados[9] = emailCliente.getText();
-            ctrlClientes.atualizar(dados);
+            arrayJSON.add(String.valueOf(tabelaCliente.getValueAt(iLinha, 0)));
+            arrayJSON.add(nomeCliente.getText());
+            arrayJSON.add(cpfCliente.getText());
+            arrayJSON.add(rgCliente.getText());
+            arrayJSON.add(cnpjCliente.getText());
+            arrayJSON.add(inscEstadualCliente.getText());
+            arrayJSON.add(enderecoCliente.getText());
+            arrayJSON.add(cidadeCliente.getText());
+            arrayJSON.add(telefoneCliente.getText());
+            arrayJSON.add(emailCliente.getText());
+            ctrlClientes.atualizar(arrayJSON);
+            JOptionPane.showMessageDialog(null, "Cliente atualizado com sucesso");
         }
     }
 
     private void gravaConta() {
-        String[] dados = new String[7];
+        JSONArray arrayJSON = new JSONArray();
         int iLinha = tabelaConta.getSelectedRow();
 
         if (controle) {
-            dados[0] = "0";
-            dados[1] = descricaoConta.getText();
-            dados[2] = gerarNumeroConta();
-            dados[3] = agenciaConta.getText();
-            dados[4] = saldoConta.getText();
-            dados[5] = String.valueOf(cbInvestimento.isSelected());
-            dados[6] = String.valueOf(cbAtivo.isSelected());
-            ctrlConta.inserir(dados);
+            arrayJSON.add("0");
+            arrayJSON.add(descricaoConta.getText());
+            arrayJSON.add(gerarNumeroConta());
+            arrayJSON.add(agenciaConta.getText());
+            arrayJSON.add(saldoConta.getText());
+            arrayJSON.add(String.valueOf(cbInvestimento.isSelected()));
+            arrayJSON.add(String.valueOf(cbAtivo.isSelected()));
+            ctrlConta.inserir(arrayJSON);
+            JOptionPane.showMessageDialog(null, "Conta inserida com sucesso");
         } else {
-            dados[0] = String.valueOf(tabelaConta.getValueAt(iLinha, 0));
-            dados[1] = descricaoConta.getText();
-            dados[2] = String.valueOf(tabelaConta.getValueAt(iLinha, 2));
-            dados[3] = String.valueOf(tabelaConta.getValueAt(iLinha, 3));
-            dados[4] = String.valueOf(tabelaConta.getValueAt(iLinha, 4));
-            dados[5] = String.valueOf(cbInvestimento.isSelected());
-            dados[6] = String.valueOf(cbAtivo.isSelected());
-            ctrlConta.atualizar(dados);
+            arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 0)));
+            arrayJSON.add(descricaoConta.getText());
+            arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 2)));
+            arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 3)));
+            arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 4)));
+            arrayJSON.add(String.valueOf(cbInvestimento.isSelected()));
+            arrayJSON.add(String.valueOf(cbAtivo.isSelected()));
+            ctrlConta.atualizar(arrayJSON);
+            JOptionPane.showMessageDialog(null, "Conta atualizada com sucesso");
         }
     }
 
     private void gravaTipoProduto() {
-        String[] dados = new String[4];
+        JSONArray arrayJSON = new JSONArray();
         int iLinha = tabelaTipoProduto.getSelectedRow();
 
         if (controle) {
-            dados[0] = "0";
-            dados[1] = nomeTipoProduto.getText();
-            dados[2] = modalidadeTipoProduto.getText();
-            dados[3] = taxaRentabilidadeTipoProduto.getText();
-            ctrlTipoProd.inserir(dados);
+            arrayJSON.add("0");
+            arrayJSON.add(nomeTipoProduto.getText());
+            arrayJSON.add(modalidadeTipoProduto.getText());
+            arrayJSON.add(taxaRentabilidadeTipoProduto.getText());
+            ctrlTipoProd.inserir(arrayJSON);
+            JOptionPane.showMessageDialog(null, "Tipo inserido com sucesso");
         } else {
-            dados[0] = (String) tabelaTipoProduto.getValueAt(iLinha, 0);
-            dados[1] = nomeTipoProduto.getText();
-            dados[2] = modalidadeTipoProduto.getText();
-            dados[3] = taxaRentabilidadeTipoProduto.getText();
-            ctrlTipoProd.atualizar(dados);
+            arrayJSON.add((String) tabelaTipoProduto.getValueAt(iLinha, 0));
+            arrayJSON.add(nomeTipoProduto.getText());
+            arrayJSON.add(modalidadeTipoProduto.getText());
+            arrayJSON.add(taxaRentabilidadeTipoProduto.getText());
+            ctrlTipoProd.atualizar(arrayJSON);
+            JOptionPane.showMessageDialog(null, "Tipo atualizado com sucesso");
         }
     }
 
     private void gravaProduto() {
-        String[] dados = new String[12];
+        JSONArray arrayJSON = new JSONArray();
         int iLinha = tabelaProduto.getSelectedRow();
 
         if ((!taxaOperacionalProduto.getText().isEmpty() || !taxaFixaProduto.getText().isEmpty())
@@ -1448,87 +1460,89 @@ public class Tela extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(null, "Esta modalidade de conta não pode ter nenhuma taxa");
         } else {
             if (controle) {
-                dados[0] = "0";
-                dados[1] = nomeProduto.getText();
-                dados[2] = descricaoProduto.getText();
-                dados[3] = capacidadeProduto.getText();
-                dados[4] = dataInicioProduto.getText();
-                dados[5] = dataTerminoProduto.getText();
-                dados[6] = prazoVencimentoProduto.getText();
-                dados[7] = diaFechamentoProduto.getText();
-                dados[8] = valorMinimoProduto.getText();
-                dados[9] = taxaFixaProduto.getText();
-                dados[10] = taxaOperacionalProduto.getText();
-                dados[11] = tipoProduto.getText();
-                ctrlProduto.inserir(dados);
+                arrayJSON.add("0");
+                arrayJSON.add(nomeProduto.getText());
+                arrayJSON.add(descricaoProduto.getText());
+                arrayJSON.add(capacidadeProduto.getText());
+                arrayJSON.add(dataInicioProduto.getText());
+                arrayJSON.add(dataTerminoProduto.getText());
+                arrayJSON.add(prazoVencimentoProduto.getText());
+                arrayJSON.add(diaFechamentoProduto.getText());
+                arrayJSON.add(valorMinimoProduto.getText());
+                arrayJSON.add(taxaFixaProduto.getText());
+                arrayJSON.add(taxaOperacionalProduto.getText());
+                arrayJSON.add(tipoProduto.getText());
+                ctrlProduto.inserir(arrayJSON);
+                JOptionPane.showMessageDialog(null, "Produto inserido com sucesso");
             } else {
-                dados[0] = (String) tabelaProduto.getValueAt(iLinha, 0);
-                dados[1] = nomeProduto.getText();
-                dados[2] = descricaoProduto.getText();
-                dados[3] = capacidadeProduto.getText();
-                dados[4] = dataInicioProduto.getText();
-                dados[5] = dataTerminoProduto.getText();
-                dados[6] = prazoVencimentoProduto.getText();
-                dados[7] = diaFechamentoProduto.getText();
-                dados[8] = valorMinimoProduto.getText();
-                dados[9] = taxaFixaProduto.getText();
-                dados[10] = taxaOperacionalProduto.getText();
-                dados[11] = tipoProduto.getText();
-                ctrlProduto.atualizar(dados);
+                arrayJSON.add(String.valueOf(tabelaProduto.getValueAt(iLinha, 0)));
+                arrayJSON.add(nomeProduto.getText());
+                arrayJSON.add(descricaoProduto.getText());
+                arrayJSON.add(capacidadeProduto.getText());
+                arrayJSON.add(dataInicioProduto.getText());
+                arrayJSON.add(dataTerminoProduto.getText());
+                arrayJSON.add(prazoVencimentoProduto.getText());
+                arrayJSON.add(diaFechamentoProduto.getText());
+                arrayJSON.add(valorMinimoProduto.getText());
+                arrayJSON.add(taxaFixaProduto.getText());
+                arrayJSON.add(taxaOperacionalProduto.getText());
+                arrayJSON.add(tipoProduto.getText());
+                ctrlProduto.atualizar(arrayJSON);
+                JOptionPane.showMessageDialog(null, "Produto atualizado com sucesso");
             }
         }
     }
 
-    private void criaContaInvestimento(Integer codConta, Integer codProduto) throws SQLException {    
-        String[] dados = new String[7];
-        int iLinha = tabelaConta.getSelectedRow();
-        dados[0] = "0";
-        dados[1] = "Conta de investimento criada";
-        dados[2] = gerarNumeroConta();
-        dados[3] = "02";
-        dados[4] = "0";
-        dados[5] = String.valueOf("true");
-        dados[6] = String.valueOf("true");
-        ctrlConta.inserir(dados);
-        
-        
-        String[] produtoContratado = ctrlProduto.recuperar(codProduto);
+    private void criaContaInvestimento(Integer codConta, Integer codProduto) throws SQLException {
+        JSONArray arrayJSON = new JSONArray();
+
+        arrayJSON.add("0");
+        arrayJSON.add("Conta de investimento criada");
+        arrayJSON.add(gerarNumeroConta());
+        arrayJSON.add(agenciaContaInvestimento);
+        arrayJSON.add("0");
+        arrayJSON.add(String.valueOf("true"));
+        arrayJSON.add(String.valueOf("true"));
+        ctrlConta.inserir(arrayJSON);
+
+        JSONArray produtoContratado = ctrlProduto.recuperar(codProduto);
         String[][] ultimaConta = ctrlConta.recuperarTodos(1);
-        
-        TransferenciaContas.transferir(codConta, Integer.parseInt(ultimaConta[0][0]), produtoContratado[8]);
+        Movimentacoes.transferir(codConta, Integer.parseInt(ultimaConta[0][0]), String.valueOf(produtoContratado.get(8)));
     }
 
     private void gravaContrataProduto() throws ParseException, SQLException {
-        String[] dados = new String[6];
+        JSONArray arrayJSON = new JSONArray();
         int iLinha = tabelaContratarProd.getSelectedRow();
 
         if (verificaCapacidadeProduto(Integer.parseInt(codProdutoContrataProd.getText()))) {
-            String[] produtoContratado = ctrlProduto.recuperar(Integer.parseInt(codProdutoContrataProd.getText()));
-            String[] contaContratada = ctrlConta.recuperar(Integer.parseInt(codContaContrataProd.getText()));
+            JSONArray produtoContratado = ctrlProduto.recuperar(Integer.parseInt(codProdutoContrataProd.getText()));
+            JSONArray contaContratada = ctrlConta.recuperar(Integer.parseInt(codContaContrataProd.getText()));
 
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-            if (sdf.parse(dataContratacaoProd.getText()).before(sdf.parse(produtoContratado[4])) || sdf.parse(dataContratacaoProd.getText()).after(sdf.parse(produtoContratado[5]))) {
+            if (sdf.parse(dataContratacaoProd.getText()).before(sdf.parse(String.valueOf(produtoContratado.get(4)))) || sdf.parse(dataContratacaoProd.getText()).after(sdf.parse(String.valueOf(produtoContratado.get(5))))) {
                 JOptionPane.showMessageDialog(null, "Um produto somente pode ser contratado entre as datas de início e término.");
-            } else if (Double.valueOf(contaContratada[4]) < Double.valueOf(produtoContratado[8])) {
+            } else if (Double.valueOf(String.valueOf(contaContratada.get(4))) < Double.valueOf(String.valueOf(produtoContratado.get(8)))) {
                 JOptionPane.showMessageDialog(null, "Não é possível contratar esse produto. O saldo da conta é menor que o mínimo de investimento.");
             } else {
                 if (controle) {
-                    dados[0] = "0";
-                    dados[1] = codClienteContrataProd.getText();
-                    dados[2] = codProdutoContrataProd.getText();
-                    dados[3] = dataContratacaoProd.getText();
-                    dados[4] = dataLiquidacaoContrataProd.getText();
-                    dados[5] = codContaContrataProd.getText();
-                    ctrlContratarProduto.inserir(dados);
-                    criaContaInvestimento(Integer.parseInt(dados[5]), Integer.parseInt(dados[2]));
+                    arrayJSON.add("0");
+                    arrayJSON.add(codClienteContrataProd.getText());
+                    arrayJSON.add(codProdutoContrataProd.getText());
+                    arrayJSON.add(dataContratacaoProd.getText());
+                    arrayJSON.add(dataLiquidacaoContrataProd.getText());
+                    arrayJSON.add(codContaContrataProd.getText());
+                    ctrlContratarProduto.inserir(arrayJSON);
+                    criaContaInvestimento(Integer.parseInt((String.valueOf(arrayJSON.get(5)))), Integer.parseInt(String.valueOf(arrayJSON.get(2))));
+                    JOptionPane.showMessageDialog(null, "Produto contratado com sucesso");
                 } else {
-                    dados[0] = (String) tabelaContratarProd.getValueAt(iLinha, 0);
-                    dados[1] = codClienteContrataProd.getText();
-                    dados[2] = codProdutoContrataProd.getText();
-                    dados[3] = dataContratacaoProd.getText();
-                    dados[4] = dataLiquidacaoContrataProd.getText();
-                    dados[5] = codContaContrataProd.getText();
-                    ctrlContratarProduto.atualizar(dados);
+                    arrayJSON.add((String) tabelaContratarProd.getValueAt(iLinha, 0));
+                    arrayJSON.add(codClienteContrataProd.getText());
+                    arrayJSON.add(codProdutoContrataProd.getText());
+                    arrayJSON.add(dataContratacaoProd.getText());
+                    arrayJSON.add(dataLiquidacaoContrataProd.getText());
+                    arrayJSON.add(codContaContrataProd.getText());
+                    ctrlContratarProduto.atualizar(arrayJSON);
+                    JOptionPane.showMessageDialog(null, "Contrato editado com sucesso");
                 }
             }
         } else {
@@ -1537,10 +1551,9 @@ public class Tela extends javax.swing.JFrame {
     }
 
     private boolean verificaCapacidadeProduto(Integer codProduto) {
-        String[] dados = new String[12];
-        dados = ctrlProduto.recuperar(codProduto);
-        int capacidade = Integer.parseInt(dados[3]);
-        int soma = 0;
+        JSONArray dados = ctrlProduto.recuperar(codProduto);
+        int capacidade = Integer.parseInt(String.valueOf(dados.get(3)));
+        int soma = 1;
 
         String[][] quantidadeProduto = ctrlContratarProduto.recuperarTodos(1);
 
@@ -1549,7 +1562,6 @@ public class Tela extends javax.swing.JFrame {
                 soma++;
             }
         }
-
         if (soma <= capacidade) {
             return true;
         } else {
@@ -1704,7 +1716,12 @@ public class Tela extends javax.swing.JFrame {
     }
 
     private void gravaContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gravaContaActionPerformed
-        gravaConta();
+        try {
+            gravaConta();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Conta não inserido");
+        }
+
         carregarTabelaConta();
         camposInativos();
     }//GEN-LAST:event_gravaContaActionPerformed
@@ -1715,7 +1732,14 @@ public class Tela extends javax.swing.JFrame {
 
     private void excluiContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluiContaActionPerformed
         int linha = tabelaConta.getSelectedRow();
-        ctrlConta.excluir(Integer.parseInt(String.valueOf(tabelaConta.getValueAt(linha, 0))));
+
+        try {
+            ctrlConta.excluir(Integer.parseInt(String.valueOf(tabelaConta.getValueAt(linha, 0))));
+            JOptionPane.showMessageDialog(null, "Excluido com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não excluido.");
+        }
+
         carregarTabelaConta();
         novoCadastro();
     }//GEN-LAST:event_excluiContaActionPerformed
@@ -1731,13 +1755,13 @@ public class Tela extends javax.swing.JFrame {
 
         String cbInvest = (String) tabelaConta.getValueAt(linha, 5);
         String cbAtiv = (String) tabelaConta.getValueAt(linha, 6);
-        if ("true".equals(cbInvest)) {
+        if ("Sim".equals(cbInvest)) {
             cbInvestimento.setSelected(true);
         } else {
             cbInvestimento.setSelected(false);
         }
 
-        if ("true".equals(cbAtiv)) {
+        if ("Sim".equals(cbAtiv)) {
             cbAtivo.setSelected(true);
         } else {
             cbAtivo.setSelected(false);
@@ -1763,12 +1787,12 @@ public class Tela extends javax.swing.JFrame {
         try {
             String[][] contratosProdutos = ctrlContratarProduto.recuperarTodos(6);
             for (String[] dado : contratosProdutos) {
-                if (sdf.parse(Funcoes.now()).before(sdf.parse(dado[4])) && Integer.parseInt(dado[5]) == codContaOrigem) {
+                if (sdf.parse(FuncoesData.now()).before(sdf.parse(dado[4])) && Integer.parseInt(dado[5]) == codContaOrigem) {
                     JOptionPane.showMessageDialog(null, "Não é possível realizar a transferência. Data atual é anterior à data de liquidação.");
                     return;
                 }
             }
-            TransferenciaContas.transferir(codContaOrigem, codContaDestino, valor);
+            Movimentacoes.transferir(codContaOrigem, codContaDestino, valor);
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Erro ao tentar transferir - view " + e);
         }
@@ -1780,9 +1804,19 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_novoClienteActionPerformed
 
     private void gravaClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gravaClienteActionPerformed
-        if (verificaObrigatoriedade()) {
-            gravaCliente();
+
+        try {
+            if (verificaObrigatoriedade()) {
+                if (verificaCapacidadeProduto(4)) {
+                    gravaCliente();
+                } else {
+                    JOptionPane.showMessageDialog(null, "Este cliente não pode ser cadastrado pois o produto Conta Corrente atingiu seu limite");
+                }
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Cliente não inserido");
         }
+
         carregarTabelas();
         camposInativos();
     }//GEN-LAST:event_gravaClienteActionPerformed
@@ -1793,7 +1827,14 @@ public class Tela extends javax.swing.JFrame {
 
     private void excluiClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluiClienteActionPerformed
         int linha = tabelaCliente.getSelectedRow();
-        ctrlClientes.excluir(Integer.parseInt(String.valueOf(tabelaCliente.getValueAt(linha, 0))));
+
+        try {
+            ctrlClientes.excluir(Integer.parseInt(String.valueOf(tabelaCliente.getValueAt(linha, 0))));
+            JOptionPane.showMessageDialog(null, "Excluido com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não excluido.");
+        }
+
         carregarTabelaCliente();
         novoCadastro();
     }//GEN-LAST:event_excluiClienteActionPerformed
@@ -1819,7 +1860,11 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_novoProdutoActionPerformed
 
     private void gravaProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gravaProdutoActionPerformed
-        gravaProduto();
+        try {
+            gravaProduto();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Produto não inserido");
+        }
         carregarTabelas();
         camposInativos();
     }//GEN-LAST:event_gravaProdutoActionPerformed
@@ -1830,7 +1875,13 @@ public class Tela extends javax.swing.JFrame {
 
     private void excluiProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluiProdutoActionPerformed
         int linha = tabelaProduto.getSelectedRow();
-        ctrlProduto.excluir(Integer.parseInt(String.valueOf(tabelaProduto.getValueAt(linha, 0))));
+        try {
+            ctrlProduto.excluir(Integer.parseInt(String.valueOf(tabelaProduto.getValueAt(linha, 0))));
+            JOptionPane.showMessageDialog(null, "Excluido com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não excluido.");
+        }
+
         carregarTabelaProduto();
         novoCadastro();
     }//GEN-LAST:event_excluiProdutoActionPerformed
@@ -1861,10 +1912,10 @@ public class Tela extends javax.swing.JFrame {
     private void gravaContrataProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gravaContrataProdActionPerformed
         try {
             gravaContrataProduto();
-        } catch (SQLException | ParseException ex) {
-            Logger.getLogger(Tela.class.getName()).log(Level.SEVERE, null, ex);
-        } 
-        
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Produto não contratado");
+        }
+
         carregarTabelas();
         camposInativos();
     }//GEN-LAST:event_gravaContrataProdActionPerformed
@@ -1875,7 +1926,13 @@ public class Tela extends javax.swing.JFrame {
 
     private void excluiContrataProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluiContrataProdActionPerformed
         int linha = tabelaContratarProd.getSelectedRow();
-        ctrlContratarProduto.excluir(Integer.parseInt(String.valueOf(tabelaContratarProd.getValueAt(linha, 0))));
+        try {
+            ctrlContratarProduto.excluir(Integer.parseInt(String.valueOf(tabelaContratarProd.getValueAt(linha, 0))));
+            JOptionPane.showMessageDialog(null, "Excluido com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não excluido.");
+        }
+
         carregarTabelaContrataProduto();
         novoCadastro();
     }//GEN-LAST:event_excluiContrataProdActionPerformed
@@ -1901,7 +1958,11 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_novoTipoProdutoActionPerformed
 
     private void gravaTipoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gravaTipoProdutoActionPerformed
-        gravaTipoProduto();
+        try {
+            gravaTipoProduto();
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Tipo não inserido");
+        }
         carregarTabelas();
         camposInativos();
     }//GEN-LAST:event_gravaTipoProdutoActionPerformed
@@ -1912,7 +1973,13 @@ public class Tela extends javax.swing.JFrame {
 
     private void excluiTipoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluiTipoProdutoActionPerformed
         int linha = tabelaTipoProduto.getSelectedRow();
-        ctrlTipoProd.excluir(Integer.parseInt(String.valueOf(tabelaTipoProduto.getValueAt(linha, 0))));
+        try {
+            ctrlTipoProd.excluir(Integer.parseInt(String.valueOf(tabelaTipoProduto.getValueAt(linha, 0))));
+            JOptionPane.showMessageDialog(null, "Excluido com sucesso.");
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Não excluido.");
+        }
+
         carregarTabelaTipoProduto();
         novoCadastro();
     }//GEN-LAST:event_excluiTipoProdutoActionPerformed
@@ -1947,53 +2014,55 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_tipoPessoaActionPerformed
 
     private void depositarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_depositarContaActionPerformed
-        String[] retorno = new String[7];
-        String[] dados = new String[7];
-        retorno = ctrlConta.recuperar(Integer.parseInt(codContaDeposito.getText()));
 
-        if ("Sim".equals(retorno[5])) {
+        JSONArray retorno = ctrlConta.recuperar(Integer.parseInt(codContaDeposito.getText()));
+
+        if ("Sim".equals(retorno.get(5))) {
             JOptionPane.showMessageDialog(null, "Não é possível realizar depósitos em contas de investimento");
         } else {
-            dados[0] = retorno[0];
-            dados[1] = retorno[1];
-            dados[2] = retorno[2];
-            dados[3] = retorno[3];
-            dados[4] = String.valueOf((Double.parseDouble(retorno[4])) + (Double.parseDouble(valorDepositoConta.getText())));
-            dados[5] = retorno[5];
-            dados[6] = retorno[6];
-            ctrlConta.atualizar(dados);
+            double valorConta = Double.parseDouble(String.valueOf(retorno.get(4)));
+            double valorDeposito = Double.parseDouble(valorDepositoConta.getText());
+            retorno.set(4, String.valueOf(valorConta + valorDeposito));
+            ctrlConta.atualizar(retorno);
+            Movimentacoes.extratoEntradaSaida(String.valueOf(retorno.get(0)), "E", valorDepositoConta.getText());
         }
         carregarTabelaConta();
     }//GEN-LAST:event_depositarContaActionPerformed
 
     private void sacarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sacarContaActionPerformed
-        String[] retorno = new String[7];
-        String[] dados = new String[7];
-        retorno = ctrlConta.recuperar(Integer.parseInt(codContaSaque.getText()));
+        JSONArray retorno = ctrlConta.recuperar(Integer.parseInt(codContaSaque.getText()));
 
-        if ("Sim".equals(retorno[5])) {
+        double valorConta = Double.parseDouble(String.valueOf(retorno.get(4)));
+        double valorSaque = Double.parseDouble(valorSaqueConta.getText());
+
+        if ("Sim".equals(retorno.get(5))) {
             JOptionPane.showMessageDialog(null, "Não é possível realizar saques em contas de investimento");
+        } else if (Double.parseDouble(String.valueOf(retorno.get(4))) < valorSaque) {
+            JOptionPane.showMessageDialog(null, "Saldo insuficiente");
         } else {
-            dados[0] = retorno[0];
-            dados[1] = retorno[1];
-            dados[2] = retorno[2];
-            dados[3] = retorno[3];
-            dados[4] = String.valueOf((Double.parseDouble(retorno[4])) - (Double.parseDouble(valorSaqueConta.getText())));
-            dados[5] = retorno[5];
-            dados[6] = retorno[6];
-
-            ctrlConta.atualizar(dados);
+            retorno.set(4, valorConta - valorSaque);
+            ctrlConta.atualizar(retorno);
+            Movimentacoes.extratoEntradaSaida(String.valueOf(retorno.get(0)), "S", valorSaqueConta.getText());
+            carregarTabelaConta();
         }
-        carregarTabelaConta();
     }//GEN-LAST:event_sacarContaActionPerformed
 
-    private void telefoneClienteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_telefoneClienteActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_telefoneClienteActionPerformed
+    private void produtoProcessamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_produtoProcessamentoActionPerformed
+        int linha = tabelaProduto.getSelectedRow();
 
-    private void dataTerminoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataTerminoProdutoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_dataTerminoProdutoActionPerformed
+        String codProduto = String.valueOf(tabelaProduto.getValueAt(linha, 0));
+        String codTipoProduto = String.valueOf(tabelaProduto.getValueAt(linha, 11));
+
+        String[][] contratosProduto = ctrlContratarProduto.recuperarTodos(1);
+        JSONArray rentabilidade = ctrlTipoProd.recuperar(11);
+
+        for (String[] dado : contratosProduto) {
+            if (dado[2].equals(codProduto)) {
+                JSONArray conta = ctrlConta.recuperar(Integer.parseInt(dado[5]));
+                //model.addRow(dado);
+            }
+        }
+    }//GEN-LAST:event_produtoProcessamentoActionPerformed
 
     private void carregarTabelaCliente() {
         DefaultTableModel model = (DefaultTableModel) tabelaCliente.getModel();
@@ -2211,6 +2280,7 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JPanel painelTipoProduto;
     private javax.swing.JPanel painelTransferencia;
     private javax.swing.JTextField prazoVencimentoProduto;
+    private javax.swing.JToggleButton produtoProcessamento;
     private javax.swing.JTextField rgCliente;
     private javax.swing.JButton sacarConta;
     private javax.swing.JTextField saldoConta;

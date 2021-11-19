@@ -10,5 +10,4 @@ public class CtrlContratarProduto extends ControllerBase{
         objModel = new ContratarProduto();
         objDAO = new DAOContratarProduto();
     }
-    
 }

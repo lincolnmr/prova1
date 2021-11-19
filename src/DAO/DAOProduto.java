@@ -1,6 +1,6 @@
 package DAO;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -59,8 +59,8 @@ public class DAOProduto extends Persistencia {
             produto.setNome(obj.getString("prod_nome"));
             produto.setDescricao(obj.getString("prod_descricao"));
             produto.setCapacidade(obj.getInt("prod_capacidade"));
-            produto.setDataInicio(Funcoes.toCalendar(obj.getDate("prod_data_inicio")));
-            produto.setDataTermino(Funcoes.toCalendar(obj.getDate("prod_data_termino")));
+            produto.setDataInicio(FuncoesData.toCalendar(obj.getDate("prod_data_inicio")));
+            produto.setDataTermino(FuncoesData.toCalendar(obj.getDate("prod_data_termino")));
             produto.setPrazoVencimento(obj.getInt("prod_prazo_vencimento"));
             produto.setDiaFechamento(obj.getInt("prod_dia_fechamento"));
             produto.setValorMinInvestimento(obj.getDouble("prod_valor_min_investimento"));
@@ -97,8 +97,8 @@ public class DAOProduto extends Persistencia {
         produto.setNome(obj.getString("prod_nome"));
         produto.setDescricao(obj.getString("prod_descricao"));
         produto.setCapacidade(obj.getInt("prod_capacidade"));
-        produto.setDataInicio(Funcoes.toCalendar(obj.getDate("prod_data_inicio")));
-        produto.setDataTermino(Funcoes.toCalendar(obj.getDate("prod_data_termino")));
+        produto.setDataInicio(FuncoesData.toCalendar(obj.getDate("prod_data_inicio")));
+        produto.setDataTermino(FuncoesData.toCalendar(obj.getDate("prod_data_termino")));
         produto.setPrazoVencimento(obj.getInt("prod_prazo_vencimento"));
         produto.setDiaFechamento(obj.getInt("prod_dia_fechamento"));
         produto.setValorMinInvestimento(obj.getDouble("prod_valor_min_investimento"));

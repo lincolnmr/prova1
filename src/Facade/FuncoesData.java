@@ -1,14 +1,15 @@
-package Utilitario;
+package Facade;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Locale;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
-public class Funcoes {
-
+public class FuncoesData {
+    
     public static Calendar stringToDate(String sData) throws ParseException {
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -33,9 +34,23 @@ public class Funcoes {
     }
 
     public static String now() {
+        TimeZone.setDefault(TimeZone.getTimeZone("America/Sao_Paulo"));
+        
         Calendar cal = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         return sdf.format(cal.getTime());
     }
 
+    public static String somaUmAno(){ 
+        Calendar cal = Calendar.getInstance();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        try {
+            cal.setTime(sdf.parse(now()));
+        } catch (ParseException ex) {
+            Logger.getLogger(FuncoesData.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        cal.add(Calendar.DATE, 365);
+
+        return sdf.format(cal.getTime());
+    }
 }

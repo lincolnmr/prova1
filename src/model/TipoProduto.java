@@ -1,5 +1,7 @@
 package model;
 
+import org.json.simple.JSONArray;
+
 public class TipoProduto extends ObjetoBase{
     
     private int codigo;
@@ -40,21 +42,30 @@ public class TipoProduto extends ObjetoBase{
     }
 
     @Override
-    public String[] toArray() {
+    public JSONArray toJson() {
+        JSONArray arrayJSON = new JSONArray();
+        arrayJSON.add(String.valueOf(getCodigo()));
+        arrayJSON.add(getNome());        
+        arrayJSON.add(getModalidade());
+        arrayJSON.add(String.valueOf(getTaxaRentabilidade()));
+        return arrayJSON; 
+    }
+
+    @Override
+    public ObjetoBase jsonTo(JSONArray dados) {
+        setCodigo(Integer.parseInt(String.valueOf(dados.get(0))));
+        setNome(String.valueOf(dados.get(1)));
+        setModalidade(String.valueOf(dados.get(2)));
+        setTaxaRentabilidade(Double.parseDouble(String.valueOf(dados.get(3))));
+        return this;
+    }
+    
+    public String[] preencheTabela() {
         String[] array = new String[4];
         array[0] = String.valueOf(getCodigo());
         array[1] = getNome();        
         array[2] = getModalidade();
         array[3] = String.valueOf(getTaxaRentabilidade());
         return array; 
-    }
-
-    @Override
-    public ObjetoBase arrayTo(String[] dados) {
-        setCodigo(Integer.parseInt(dados[0]));
-        setNome(dados[1]);
-        setModalidade(dados[2]);
-        setTaxaRentabilidade(Double.parseDouble(dados[3]));
-        return this;
     }
 }

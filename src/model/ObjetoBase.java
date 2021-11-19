@@ -1,5 +1,7 @@
 package model;
 
+import org.json.simple.JSONArray;
+
 public abstract class ObjetoBase {
     private int id;
 
@@ -11,7 +13,10 @@ public abstract class ObjetoBase {
         this.id = id;
     }
     
-    public abstract String[] toArray();
+    public abstract JSONArray toJson();
     
-    public abstract ObjetoBase arrayTo(String[] dados);
+    public abstract ObjetoBase jsonTo(JSONArray dados);
+    
+    public abstract String[] preencheTabela();
+    
 }

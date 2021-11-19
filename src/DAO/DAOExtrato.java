@@ -1,6 +1,6 @@
 package DAO;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import model.ObjetoBase;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -44,7 +44,7 @@ public class DAOExtrato extends Persistencia {
         while (obj.next()) {
             Extrato extrato = new Extrato();
             extrato.setCodigo(obj.getInt("ext_codigo"));
-            extrato.setData(Funcoes.toCalendar(obj.getDate("ext_data")));
+            extrato.setData(FuncoesData.toCalendar(obj.getDate("ext_data")));
             extrato.setDescricao(obj.getString("ext_descricao"));
             extrato.setValor(obj.getDouble("ext_valor"));
             extrato.setTipo(obj.getString("ext_tipo"));

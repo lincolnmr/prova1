@@ -1,9 +1,9 @@
 package model;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import java.text.ParseException;
 import java.util.Calendar;
-import javax.swing.JOptionPane;
+import org.json.simple.JSONArray;
 
 public class Produto extends ObjetoBase {
 
@@ -117,14 +117,59 @@ public class Produto extends ObjetoBase {
     }
 
     @Override
-    public String[] toArray() {
+    public JSONArray toJson() {
+        JSONArray arrayJSON = new JSONArray();
+        arrayJSON.add(String.valueOf(getCodigo()));
+        arrayJSON.add(getNome());
+        arrayJSON.add(getDescricao());
+        arrayJSON.add(String.valueOf(getCapacidade()));
+        arrayJSON.add(FuncoesData.dateToString(getDataInicio()));
+        arrayJSON.add(FuncoesData.dateToString(getDataTermino()));
+        arrayJSON.add(String.valueOf(getPrazoVencimento()));
+        arrayJSON.add(String.valueOf(getDiaFechamento()));
+        arrayJSON.add(String.valueOf(getValorMinInvestimento()));
+        arrayJSON.add(String.valueOf(getTaxaFixa()));
+        arrayJSON.add(String.valueOf(getTaxaOperacional()));
+        arrayJSON.add(String.valueOf(getTipoProduto()));
+        return arrayJSON;
+    }
+
+    @Override
+    public ObjetoBase jsonTo(JSONArray dados) {
+        setCodigo(Integer.parseInt(String.valueOf(dados.get(0))));
+        setNome(String.valueOf(dados.get(1)));
+        setDescricao(String.valueOf(dados.get(2)));
+        setCapacidade(Integer.parseInt(String.valueOf(dados.get(3))));
+        try {
+            setDataInicio(FuncoesData.stringToDate(String.valueOf(dados.get(4))));
+            setDataTermino(FuncoesData.stringToDate(String.valueOf(dados.get(5))));
+        } catch (ParseException ex) {
+            System.out.println("Não foi possivel converter data. Model Produto: " + ex);
+        }
+        setPrazoVencimento(Integer.parseInt(String.valueOf(dados.get(6))));
+        setDiaFechamento(Integer.parseInt(String.valueOf(dados.get(7))));
+        setValorMinInvestimento(Double.parseDouble(String.valueOf(dados.get(8))));
+
+        try {
+            setTaxaFixa(Double.parseDouble(String.valueOf(dados.get(9))));
+            setTaxaOperacional(Double.parseDouble(String.valueOf(dados.get(10))));
+        } catch (Exception e) {
+            System.out.println("Não foi possivel converter taxas vazias. Model Produto: " + e);
+        }
+
+        setTipoProduto(Integer.parseInt(String.valueOf(dados.get(11))));
+        return this;
+    }
+    
+     @Override
+    public String[] preencheTabela() {
         String[] array = new String[12];
         array[0] = String.valueOf(getCodigo());
         array[1] = getNome();
         array[2] = getDescricao();
         array[3] = String.valueOf(getCapacidade());
-        array[4] = Funcoes.dateToString(getDataInicio());
-        array[5] = Funcoes.dateToString(getDataTermino());
+        array[4] = FuncoesData.dateToString(getDataInicio());
+        array[5] = FuncoesData.dateToString(getDataTermino());
         array[6] = String.valueOf(getPrazoVencimento());
         array[7] = String.valueOf(getDiaFechamento());
         array[8] = String.valueOf(getValorMinInvestimento());
@@ -132,32 +177,5 @@ public class Produto extends ObjetoBase {
         array[10] = String.valueOf(getTaxaOperacional());
         array[11] = String.valueOf(getTipoProduto());
         return array;
-    }
-
-    @Override
-    public ObjetoBase arrayTo(String[] dados) {
-        setCodigo(Integer.parseInt(dados[0]));
-        setNome(dados[1]);
-        setDescricao(dados[2]);
-        setCapacidade(Integer.parseInt(dados[3]));
-        try {
-            setDataInicio(Funcoes.stringToDate(dados[4]));
-            setDataTermino(Funcoes.stringToDate(dados[5]));
-        } catch (ParseException ex) {
-            System.out.println("Não foi possivel converter data. Model Produto: " + ex);
-        }
-        setPrazoVencimento(Integer.parseInt(dados[6]));
-        setDiaFechamento(Integer.parseInt(dados[7]));
-        setValorMinInvestimento(Double.parseDouble(dados[8]));
-
-        try {
-            setTaxaFixa(Double.parseDouble(dados[9]));
-            setTaxaOperacional(Double.parseDouble(dados[10]));
-        } catch (Exception e) {
-            System.out.println("Não foi possivel converter taxas vazias. Model Produto: " + e);
-        }
-
-        setTipoProduto(Integer.parseInt(dados[11]));
-        return this;
     }
 }

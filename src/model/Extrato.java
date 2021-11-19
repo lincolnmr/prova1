@@ -1,10 +1,12 @@
 package model;
 
-import Utilitario.Funcoes;
+import Facade.FuncoesData;
 import java.text.ParseException;
 import java.util.Calendar;
+import org.json.simple.JSONArray;
 
 public class Extrato extends ObjetoBase {
+
     private int codigo;
     private Calendar data;
     private String descricao;
@@ -61,29 +63,41 @@ public class Extrato extends ObjetoBase {
     }
 
     @Override
-    public String[] toArray() {
+    public JSONArray toJson() {
+        JSONArray arrayJSON = new JSONArray();
+        arrayJSON.add(String.valueOf(getCodigo()));
+        arrayJSON.add(FuncoesData.dateToString(getData()));
+        arrayJSON.add(getDescricao());
+        arrayJSON.add(String.valueOf(getValor()));
+        arrayJSON.add(getTipo());
+        arrayJSON.add(String.valueOf(getCodigoConta()));
+        return arrayJSON;
+    }
+
+    @Override
+    public ObjetoBase jsonTo(JSONArray dados) {
+        setCodigo(Integer.parseInt(String.valueOf(dados.get(0))));
+        try {
+            setData(FuncoesData.stringToDate(String.valueOf(dados.get(1))));
+        } catch (ParseException ex) {
+            System.out.println("Não foi possivel converter data. Model Extrato: " + ex);
+        }
+        setDescricao(String.valueOf(dados.get(2)));
+        setValor(Double.parseDouble(String.valueOf(dados.get(3))));
+        setTipo(String.valueOf(dados.get(4)));
+        setCodigoConta(Integer.parseInt(String.valueOf(dados.get(5))));
+        return this;
+    }
+
+    @Override
+    public String[] preencheTabela() {
         String[] array = new String[6];
         array[0] = String.valueOf(getCodigo());
-        array[1] = Funcoes.dateToString(getData());
+        array[1] = FuncoesData.dateToString(getData());
         array[2] = getDescricao();        
         array[3] = String.valueOf(getValor());
         array[4] = getTipo();
         array[5] = String.valueOf(getCodigoConta());
         return array;        
     }
-
-    @Override
-    public ObjetoBase arrayTo(String[] dados) {
-        setCodigo(Integer.parseInt(dados[0]));
-        try {
-            setData(Funcoes.stringToDate(dados[1]));
-        } catch (ParseException ex) {
-             System.out.println("Não foi possivel converter data. Model Extrato: " + ex);
-        }
-        setDescricao(dados[2]);
-        setValor(Double.parseDouble(dados[3]));
-        setTipo(dados[4]);
-        setCodigoConta(Integer.parseInt(dados[5]));
-        return this;
-    }  
 }

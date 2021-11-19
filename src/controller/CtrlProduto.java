@@ -9,6 +9,5 @@ public class CtrlProduto extends ControllerBase{
     public void instanciarObjetos() {
         objModel = new Produto();
         objDAO = new DAOProduto();
-    }
-    
+    } 
 }

@@ -1,13 +1,9 @@
 package view;
 
-import java.awt.Dimension;
-import java.awt.Toolkit;
-
 public class Extrato extends javax.swing.JFrame {
 
     public Extrato() {
         initComponents();
-
     }
 
     /**
@@ -31,7 +27,7 @@ public class Extrato extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Código", "Descrição", "Data", "Tipo", "Valor", "Código Conta"
+                "Código", "Data", "Descrição", "Valor", "Tipo", "Código Conta"
             }
         ) {
             boolean[] canEdit = new boolean [] {
