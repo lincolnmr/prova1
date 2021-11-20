@@ -34,6 +34,7 @@ public abstract class Persistencia {
     private String SQL_UPDATE;
     private String SQL_DELETE;
     private String SQL_RECUPERAR;
+    private String SQL_RECUPERA_ULTIMO;
     private String SQL_RECUPERAR_TODOS;
 
     public String criarSQL_INSERT() {
@@ -78,6 +79,11 @@ public abstract class Persistencia {
         String sql = "SELECT * FROM " + tabela + " WHERE " + campoChave + " = ?";
         return sql;
     }
+    
+    public String criarSQL_RECUPERA_ULTIMO() {
+        String sql = "SELECT * FROM " + tabela + " ORDER BY " + campos[0] + " DESC LIMIT 1";
+        return sql;
+    }
 
     public String criarSQL_RECUPERAR_TODOS() {
         String sql = "SELECT * FROM " + tabela + " ORDER BY " + campos[0] + " DESC ";
@@ -91,6 +97,7 @@ public abstract class Persistencia {
         SQL_DELETE = criarSQL_DELETE();
         SQL_RECUPERAR = criarSQL_RECUPERAR();
         SQL_RECUPERAR_TODOS = criarSQL_RECUPERAR_TODOS();
+        SQL_RECUPERA_ULTIMO = criarSQL_RECUPERA_ULTIMO();
     }
 
     public String getTabela() {
@@ -167,6 +174,17 @@ public abstract class Persistencia {
         return null;
     }
 
+    public ObjetoBase recuperarUltimo() {
+        try {
+            PreparedStatement ST = conexao.prepareStatement(SQL_RECUPERA_ULTIMO);
+            ResultSet objResultSet = ST.executeQuery();
+            return  recuperar(objResultSet);
+        } catch (SQLException ex) {
+            System.out.println("Erro ao recuperar ultimo - DAO \n" + ex.getMessage());
+        }
+        return null;
+    }
+    
     public ArrayList<ObjetoBase>recuperarTodos() {
         try {
             PreparedStatement ST = conexao.prepareStatement(SQL_RECUPERAR_TODOS);

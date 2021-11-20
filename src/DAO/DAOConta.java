@@ -32,8 +32,8 @@ public class DAOConta extends Persistencia {
         ST.setString(3, conta.getNumero());
         ST.setString(4, conta.getAgencia());
         ST.setDouble(5, conta.getSaldo());
-        ST.setBoolean(6, conta.isContaInvestimento());
-        ST.setBoolean(7, conta.isAtivo());
+        ST.setString(6, conta.getContaInvestimento());
+        ST.setString(7, conta.getAtivo());
     }
 
     @Override
@@ -43,8 +43,8 @@ public class DAOConta extends Persistencia {
         ST.setString(2, conta.getNumero());
         ST.setString(3, conta.getAgencia());
         ST.setDouble(4, conta.getSaldo());
-        ST.setBoolean(5, conta.isContaInvestimento());
-        ST.setBoolean(6, conta.isAtivo());
+        ST.setString(5, conta.getContaInvestimento());
+        ST.setString(6, conta.getAtivo());
         ST.setInt(7, conta.getCodigo());
     }
 
@@ -60,8 +60,8 @@ public class DAOConta extends Persistencia {
             conta.setNumero(obj.getString("con_numero_conta"));
             conta.setAgencia(obj.getString("con_agencia"));
             conta.setSaldo(obj.getDouble("con_saldo"));
-            conta.setContaInvestimento(obj.getBoolean("con_conta_investimento"));
-            conta.setAtivo(obj.getBoolean("con_ativo"));
+            conta.setContaInvestimento(obj.getString("con_conta_investimento"));
+            conta.setAtivo(obj.getString("con_ativo"));
             contas.add(conta);
         }
         return contas;
@@ -76,8 +76,8 @@ public class DAOConta extends Persistencia {
         conta.setNumero(obj.getString("con_numero_conta"));
         conta.setAgencia(obj.getString("con_agencia"));
         conta.setSaldo(obj.getDouble("con_saldo"));
-        conta.setContaInvestimento(obj.getBoolean("con_conta_investimento"));
-        conta.setAtivo(obj.getBoolean("con_ativo"));
+        conta.setContaInvestimento(obj.getString("con_conta_investimento"));
+        conta.setAtivo(obj.getString("con_ativo"));
         return conta;
     }
 }

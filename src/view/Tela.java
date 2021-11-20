@@ -4,6 +4,7 @@ import Facade.FuncoesData;
 import controller.CtrlConta;
 import controller.CtrlExtrato;
 import Facade.Movimentacoes;
+import Facade.TrataString;
 import controller.CtrlClientes;
 import controller.CtrlContratarProduto;
 import controller.CtrlProduto;
@@ -26,11 +27,11 @@ public class Tela extends javax.swing.JFrame {
     private CtrlExtrato ctrlExtrato;
     private CtrlProduto ctrlProduto;
     private boolean controle = true;
+    private int tipoCliente = 0;
 
     public static final String agenciaContaCorrente = "01";
     public static final String agenciaContaInvestimento = "02";
-
-    private int tipoCliente = 0;
+    public static final double taxaSelic = 7.75;
 
     public Tela() {
         initComponents();
@@ -132,7 +133,6 @@ public class Tela extends javax.swing.JFrame {
         descricaoProduto = new javax.swing.JTextArea();
         dataInicioProduto = new javax.swing.JFormattedTextField();
         dataTerminoProduto = new javax.swing.JFormattedTextField();
-        produtoProcessamento = new javax.swing.JToggleButton();
         painelContratarProduto = new javax.swing.JPanel();
         novoContratarProd = new javax.swing.JButton();
         gravaContrataProd = new javax.swing.JButton();
@@ -150,6 +150,9 @@ public class Tela extends javax.swing.JFrame {
         jLabel41 = new javax.swing.JLabel();
         dataContratacaoProd = new javax.swing.JFormattedTextField();
         dataLiquidacaoContrataProd = new javax.swing.JFormattedTextField();
+        rentabilidadeVariavel = new javax.swing.JTextField();
+        jLabel43 = new javax.swing.JLabel();
+        produtoProcessamento = new javax.swing.JToggleButton();
         painelTransferencia = new javax.swing.JPanel();
         codContaOrigemTransf = new javax.swing.JTextField();
         valorTransf = new javax.swing.JTextField();
@@ -481,11 +484,6 @@ public class Tela extends javax.swing.JFrame {
         jLabel2.setText("Agência");
 
         cbAtivo.setText("Ativo");
-        cbAtivo.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                cbAtivoActionPerformed(evt);
-            }
-        });
 
         jLabel26.setText("Saldo");
 
@@ -787,13 +785,6 @@ public class Tela extends javax.swing.JFrame {
             ex.printStackTrace();
         }
 
-        produtoProcessamento.setText("Processamento");
-        produtoProcessamento.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                produtoProcessamentoActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout painelProdutoLayout = new javax.swing.GroupLayout(painelProduto);
         painelProduto.setLayout(painelProdutoLayout);
         painelProdutoLayout.setHorizontalGroup(
@@ -846,9 +837,7 @@ public class Tela extends javax.swing.JFrame {
                         .addGap(34, 34, 34)
                         .addComponent(editaProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(39, 39, 39)
-                        .addComponent(excluiProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(32, 32, 32)
-                        .addComponent(produtoProcessamento)))
+                        .addComponent(excluiProduto, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(25, 25, 25))
         );
         painelProdutoLayout.setVerticalGroup(
@@ -915,9 +904,7 @@ public class Tela extends javax.swing.JFrame {
                     .addComponent(novoProduto)
                     .addComponent(gravaProduto)
                     .addComponent(editaProduto)
-                    .addGroup(painelProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(excluiProduto)
-                        .addComponent(produtoProcessamento))))
+                    .addComponent(excluiProduto)))
         );
 
         jPBanco.addTab("Produtos", painelProduto);
@@ -995,6 +982,15 @@ public class Tela extends javax.swing.JFrame {
             ex.printStackTrace();
         }
 
+        jLabel43.setText("Rentabilidade");
+
+        produtoProcessamento.setText("Processar");
+        produtoProcessamento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                produtoProcessamentoActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout painelContratarProdutoLayout = new javax.swing.GroupLayout(painelContratarProduto);
         painelContratarProduto.setLayout(painelContratarProdutoLayout);
         painelContratarProdutoLayout.setHorizontalGroup(
@@ -1003,7 +999,7 @@ public class Tela extends javax.swing.JFrame {
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(painelContratarProdutoLayout.createSequentialGroup()
                         .addGap(10, 10, 10)
-                        .addComponent(jScrollPane5))
+                        .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 788, Short.MAX_VALUE))
                     .addGroup(painelContratarProdutoLayout.createSequentialGroup()
                         .addGap(169, 169, 169)
                         .addComponent(novoContratarProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1012,10 +1008,16 @@ public class Tela extends javax.swing.JFrame {
                         .addGap(29, 29, 29)
                         .addComponent(editaContratarProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(39, 39, 39)
-                        .addComponent(excluiContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(excluiContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(37, 37, 37)
+                        .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(rentabilidadeVariavel, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel43)
+                            .addComponent(produtoProcessamento))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelContratarProdutoLayout.createSequentialGroup()
-                .addGap(0, 112, Short.MAX_VALUE)
+            .addGroup(painelContratarProdutoLayout.createSequentialGroup()
+                .addGap(76, 76, 76)
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel13)
                     .addComponent(codClienteContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -1023,56 +1025,62 @@ public class Tela extends javax.swing.JFrame {
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(codContaContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel41))
-                .addGap(60, 60, 60)
+                .addGap(61, 61, 61)
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel14)
                     .addComponent(codProdutoContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(64, 64, 64)
+                .addGap(48, 48, 48)
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(jLabel15)
                     .addComponent(dataContratacaoProd, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(29, 29, 29)
+                .addGap(65, 65, 65)
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel40)
                     .addComponent(dataLiquidacaoContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(71, 71, 71))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         painelContratarProdutoLayout.setVerticalGroup(
             painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelContratarProdutoLayout.createSequentialGroup()
                 .addGap(11, 11, 11)
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(66, 66, 66)
-                .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelContratarProdutoLayout.createSequentialGroup()
-                        .addComponent(jLabel40)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 73, Short.MAX_VALUE)
+                .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelContratarProdutoLayout.createSequentialGroup()
+                            .addComponent(jLabel40)
+                            .addGap(10, 10, 10)
+                            .addComponent(dataLiquidacaoContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelContratarProdutoLayout.createSequentialGroup()
+                                .addComponent(jLabel13)
+                                .addGap(10, 10, 10)
+                                .addComponent(codClienteContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(painelContratarProdutoLayout.createSequentialGroup()
+                                .addComponent(jLabel41)
+                                .addGap(10, 10, 10)
+                                .addComponent(codContaContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addGroup(painelContratarProdutoLayout.createSequentialGroup()
+                            .addGap(24, 24, 24)
+                            .addComponent(dataContratacaoProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(jLabel15)
+                    .addGroup(painelContratarProdutoLayout.createSequentialGroup()
+                        .addComponent(jLabel14)
                         .addGap(10, 10, 10)
-                        .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(dataContratacaoProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(dataLiquidacaoContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addGroup(painelContratarProdutoLayout.createSequentialGroup()
-                            .addComponent(jLabel14)
-                            .addGap(10, 10, 10)
-                            .addComponent(codProdutoContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(javax.swing.GroupLayout.Alignment.LEADING, painelContratarProdutoLayout.createSequentialGroup()
-                            .addComponent(jLabel13)
-                            .addGap(10, 10, 10)
-                            .addComponent(codClienteContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(painelContratarProdutoLayout.createSequentialGroup()
-                            .addComponent(jLabel41)
-                            .addGap(10, 10, 10)
-                            .addComponent(codContaContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGroup(painelContratarProdutoLayout.createSequentialGroup()
-                            .addComponent(jLabel15)
-                            .addGap(30, 30, 30))))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 138, Short.MAX_VALUE)
+                        .addComponent(codProdutoContrataProd, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                .addGap(76, 76, 76)
+                .addComponent(jLabel43)
+                .addGap(10, 10, 10)
+                .addComponent(rentabilidadeVariavel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(novoContratarProd)
                     .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                         .addComponent(editaContratarProd)
                         .addComponent(gravaContrataProd))
-                    .addComponent(excluiContrataProd))
+                    .addGroup(painelContratarProdutoLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(excluiContrataProd)
+                        .addComponent(produtoProcessamento)))
                 .addGap(58, 58, 58))
         );
 
@@ -1096,22 +1104,23 @@ public class Tela extends javax.swing.JFrame {
         painelTransferenciaLayout.setHorizontalGroup(
             painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(painelTransferenciaLayout.createSequentialGroup()
-                .addGap(155, 155, 155)
-                .addGroup(painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(transferirTransf)
-                    .addGroup(painelTransferenciaLayout.createSequentialGroup()
-                        .addGroup(painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(codContaOrigemTransf, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4))
-                        .addGap(84, 84, 84)
-                        .addGroup(painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel11)
-                            .addComponent(codContaDestinoTransf, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addGap(320, 320, 320)
+                .addComponent(transferirTransf)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, painelTransferenciaLayout.createSequentialGroup()
+                .addContainerGap(216, Short.MAX_VALUE)
+                .addGroup(painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(codContaOrigemTransf, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
+                .addGap(84, 84, 84)
+                .addGroup(painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabel11)
+                    .addComponent(codContaDestinoTransf, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(79, 79, 79)
                 .addGroup(painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(valorTransf, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel10))
-                .addContainerGap(250, Short.MAX_VALUE))
+                .addGap(189, 189, 189))
         );
         painelTransferenciaLayout.setVerticalGroup(
             painelTransferenciaLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1291,8 +1300,26 @@ public class Tela extends javax.swing.JFrame {
     private void inicioPrograma() {
         cnpjCliente.setEnabled(false);
         inscEstadualCliente.setEnabled(false);
-        carregarTabelas();
+        jLabel43.setVisible(false);
+        rentabilidadeVariavel.setVisible(false);
+        camposNumericos();
         camposInativos();
+        carregarTabelas();
+    }
+
+    private void camposNumericos() {
+        agenciaConta.setDocument(new TrataString());
+        codContaOrigemTransf.setDocument(new TrataString());
+        codContaDestinoTransf.setDocument(new TrataString());
+        codContaDeposito.setDocument(new TrataString());
+        codContaSaque.setDocument(new TrataString());
+        codClienteContrataProd.setDocument(new TrataString());
+        codContaContrataProd.setDocument(new TrataString());
+        codProdutoContrataProd.setDocument(new TrataString());
+        tipoProduto.setDocument(new TrataString());
+        diaFechamentoProduto.setDocument(new TrataString());
+        prazoVencimentoProduto.setDocument(new TrataString());
+        capacidadeProduto.setDocument(new TrataString());
     }
 
     private void carregarTabelas() {
@@ -1351,20 +1378,20 @@ public class Tela extends javax.swing.JFrame {
         arrayJSON.add(gerarNumeroConta());
         arrayJSON.add(agenciaContaCorrente);
         arrayJSON.add("0");
-        arrayJSON.add("false");
-        arrayJSON.add("true");
+        arrayJSON.add("Não");
+        arrayJSON.add("Sim");
         ctrlConta.inserir(arrayJSON);
 
         arrayJSON.removeAll(arrayJSON);
 
-        String[][] cliente = ctrlClientes.recuperarTodos(7);
-        String[][] conta = ctrlConta.recuperarTodos(12);
+        JSONArray cliente = ctrlClientes.recuperarUltimo();
+        JSONArray conta = ctrlConta.recuperarUltimo();
         arrayJSON.add("0");
-        arrayJSON.add(cliente[0][0]);
+        arrayJSON.add(cliente.get(0));
         arrayJSON.add("4");
         arrayJSON.add(FuncoesData.now());
         arrayJSON.add(FuncoesData.somaUmAno());
-        arrayJSON.add(conta[0][0]);
+        arrayJSON.add(conta.get(0));
         ctrlContratarProduto.inserir(arrayJSON);
     }
 
@@ -1412,18 +1439,18 @@ public class Tela extends javax.swing.JFrame {
             arrayJSON.add(gerarNumeroConta());
             arrayJSON.add(agenciaConta.getText());
             arrayJSON.add(saldoConta.getText());
-            arrayJSON.add(String.valueOf(cbInvestimento.isSelected()));
-            arrayJSON.add(String.valueOf(cbAtivo.isSelected()));
+            arrayJSON.add(String.valueOf(cbInvestimento.isSelected() ? "Sim" : "Não"));
+            arrayJSON.add(String.valueOf(cbAtivo.isSelected() ? "Sim" : "Não"));
             ctrlConta.inserir(arrayJSON);
             JOptionPane.showMessageDialog(null, "Conta inserida com sucesso");
         } else {
             arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 0)));
             arrayJSON.add(descricaoConta.getText());
             arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 2)));
-            arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 3)));
-            arrayJSON.add(String.valueOf(tabelaConta.getValueAt(iLinha, 4)));
-            arrayJSON.add(String.valueOf(cbInvestimento.isSelected()));
-            arrayJSON.add(String.valueOf(cbAtivo.isSelected()));
+            arrayJSON.add(agenciaConta.getText());
+            arrayJSON.add(saldoConta.getText());
+            arrayJSON.add(String.valueOf(cbInvestimento.isSelected() ? "Sim" : "Não"));
+            arrayJSON.add(String.valueOf(cbAtivo.isSelected() ? "Sim" : "Não"));
             ctrlConta.atualizar(arrayJSON);
             JOptionPane.showMessageDialog(null, "Conta atualizada com sucesso");
         }
@@ -1501,13 +1528,15 @@ public class Tela extends javax.swing.JFrame {
         arrayJSON.add(gerarNumeroConta());
         arrayJSON.add(agenciaContaInvestimento);
         arrayJSON.add("0");
-        arrayJSON.add(String.valueOf("true"));
-        arrayJSON.add(String.valueOf("true"));
+        arrayJSON.add(String.valueOf("Sim"));
+        arrayJSON.add(String.valueOf("Sim"));
         ctrlConta.inserir(arrayJSON);
 
         JSONArray produtoContratado = ctrlProduto.recuperar(codProduto);
-        String[][] ultimaConta = ctrlConta.recuperarTodos(1);
-        Movimentacoes.transferir(codConta, Integer.parseInt(ultimaConta[0][0]), String.valueOf(produtoContratado.get(8)));
+        JSONArray ultimaConta = ctrlConta.recuperarUltimo();
+        int codContaDestino = Integer.parseInt(String.valueOf(ultimaConta.get(0)));
+
+        Movimentacoes.transferir(codConta, codContaDestino, String.valueOf(produtoContratado.get(8)));
     }
 
     private void gravaContrataProduto() throws ParseException, SQLException {
@@ -1531,8 +1560,11 @@ public class Tela extends javax.swing.JFrame {
                     arrayJSON.add(dataContratacaoProd.getText());
                     arrayJSON.add(dataLiquidacaoContrataProd.getText());
                     arrayJSON.add(codContaContrataProd.getText());
-                    ctrlContratarProduto.inserir(arrayJSON);
                     criaContaInvestimento(Integer.parseInt((String.valueOf(arrayJSON.get(5)))), Integer.parseInt(String.valueOf(arrayJSON.get(2))));
+
+                    JSONArray ultimaConta = ctrlConta.recuperarUltimo();
+                    arrayJSON.set(5, ultimaConta.get(0));
+                    ctrlContratarProduto.inserir(arrayJSON);
                     JOptionPane.showMessageDialog(null, "Produto contratado com sucesso");
                 } else {
                     arrayJSON.add((String) tabelaContratarProd.getValueAt(iLinha, 0));
@@ -1634,8 +1666,8 @@ public class Tela extends javax.swing.JFrame {
         tipoPessoa.setEnabled(true);
 
         descricaoConta.setEnabled(true);
-        agenciaConta.setEnabled(false);
-        saldoConta.setEnabled(false);
+        agenciaConta.setEnabled(true);
+        saldoConta.setEnabled(true);
         cbInvestimento.setEnabled(true);
         cbAtivo.setEnabled(true);
 
@@ -1732,9 +1764,10 @@ public class Tela extends javax.swing.JFrame {
 
     private void excluiContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_excluiContaActionPerformed
         int linha = tabelaConta.getSelectedRow();
+        int codConta = Integer.parseInt(String.valueOf(tabelaConta.getValueAt(linha, 0)));
 
         try {
-            ctrlConta.excluir(Integer.parseInt(String.valueOf(tabelaConta.getValueAt(linha, 0))));
+            ctrlConta.excluir(codConta);
             JOptionPane.showMessageDialog(null, "Excluido com sucesso.");
         } catch (Exception e) {
             JOptionPane.showMessageDialog(null, "Não excluido.");
@@ -1770,6 +1803,8 @@ public class Tela extends javax.swing.JFrame {
 
     private void editaContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editaContaActionPerformed
         camposAtivos();
+        saldoConta.setEnabled(false);
+        agenciaConta.setEnabled(false);
     }//GEN-LAST:event_editaContaActionPerformed
 
     private void mostrarExtratoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_mostrarExtratoActionPerformed
@@ -1778,16 +1813,21 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_mostrarExtratoActionPerformed
 
     private void transferirTransfActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_transferirTransfActionPerformed
+
         int codContaOrigem = Integer.parseInt(codContaOrigemTransf.getText());
         int codContaDestino = Integer.parseInt(codContaDestinoTransf.getText());
         String valor = valorTransf.getText();
+
+        JSONArray contaOrigem = ctrlConta.recuperar(codContaOrigem);
 
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
 
         try {
             String[][] contratosProdutos = ctrlContratarProduto.recuperarTodos(6);
             for (String[] dado : contratosProdutos) {
-                if (sdf.parse(FuncoesData.now()).before(sdf.parse(dado[4])) && Integer.parseInt(dado[5]) == codContaOrigem) {
+                if (sdf.parse(FuncoesData.now()).before(sdf.parse(dado[4]))
+                        && ((Integer.parseInt(dado[5]) == codContaOrigem)
+                        && ("Sim".equals(String.valueOf(contaOrigem.get(5)))))) {
                     JOptionPane.showMessageDialog(null, "Não é possível realizar a transferência. Data atual é anterior à data de liquidação.");
                     return;
                 }
@@ -1902,7 +1942,6 @@ public class Tela extends javax.swing.JFrame {
         taxaFixaProduto.setText((String) tabelaProduto.getValueAt(linha, 9));
         taxaOperacionalProduto.setText((String) tabelaProduto.getValueAt(linha, 10));
         tipoProduto.setText((String) tabelaProduto.getValueAt(linha, 11));
-
     }//GEN-LAST:event_tabelaProdutoMousePressed
 
     private void novoContratarProdActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novoContratarProdActionPerformed
@@ -1942,16 +1981,20 @@ public class Tela extends javax.swing.JFrame {
 
         int linha = tabelaContratarProd.getSelectedRow();
 
+        if ("9".equals(String.valueOf(tabelaContratarProd.getValueAt(linha, 2)))) {
+            jLabel43.setVisible(true);
+            rentabilidadeVariavel.setVisible(true);
+        } else {
+            jLabel43.setVisible(false);
+            rentabilidadeVariavel.setVisible(false);
+        }
+
         codClienteContrataProd.setText((String) tabelaContratarProd.getValueAt(linha, 1));
         codProdutoContrataProd.setText((String) tabelaContratarProd.getValueAt(linha, 2));
         dataContratacaoProd.setText((String) tabelaContratarProd.getValueAt(linha, 3));
         dataLiquidacaoContrataProd.setText((String) tabelaContratarProd.getValueAt(linha, 4));
         codContaContrataProd.setText((String) tabelaContratarProd.getValueAt(linha, 5));
     }//GEN-LAST:event_tabelaContratarProdMousePressed
-
-    private void cbAtivoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cbAtivoActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_cbAtivoActionPerformed
 
     private void novoTipoProdutoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_novoTipoProdutoActionPerformed
         novoCadastro();
@@ -2048,20 +2091,49 @@ public class Tela extends javax.swing.JFrame {
     }//GEN-LAST:event_sacarContaActionPerformed
 
     private void produtoProcessamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_produtoProcessamentoActionPerformed
-        int linha = tabelaProduto.getSelectedRow();
+        int codConta, codProduto, prodTipoProd, codContrato;
+        double valorConta = 0, rentabilidade = 0, rendimento = 0, taxaFixa = 0, taxaOperacional = 0;
+        int linha = tabelaContratarProd.getSelectedRow();
+        codContrato = Integer.parseInt(String.valueOf(tabelaContratarProd.getValueAt(linha, 0)));
 
-        String codProduto = String.valueOf(tabelaProduto.getValueAt(linha, 0));
-        String codTipoProduto = String.valueOf(tabelaProduto.getValueAt(linha, 11));
+        JSONArray contrato = ctrlContratarProduto.recuperar(codContrato);
+        codConta = Integer.parseInt(String.valueOf(contrato.get(5)));
+        codProduto = Integer.parseInt(String.valueOf(contrato.get(2)));
+        JSONArray conta = ctrlConta.recuperar(codConta);
+        JSONArray produto = ctrlProduto.recuperar(codProduto);
+        JSONArray tipoProdutoo = ctrlTipoProd.recuperar(Integer.parseInt(String.valueOf(produto.get(11))));
 
-        String[][] contratosProduto = ctrlContratarProduto.recuperarTodos(1);
-        JSONArray rentabilidade = ctrlTipoProd.recuperar(11);
+        prodTipoProd = Integer.parseInt(String.valueOf(tipoProdutoo.get(0)));
 
-        for (String[] dado : contratosProduto) {
-            if (dado[2].equals(codProduto)) {
-                JSONArray conta = ctrlConta.recuperar(Integer.parseInt(dado[5]));
-                //model.addRow(dado);
-            }
+        switch (prodTipoProd) {
+            case 7:
+                // code block
+                break;
+            case 8:
+                // code block
+                break;
+            case 9:
+                rentabilidade = Double.parseDouble(rentabilidadeVariavel.getText());
+                valorConta = Double.parseDouble(String.valueOf(conta.get(4)));
+                taxaFixa = Double.parseDouble(String.valueOf(produto.get(9)));
+                taxaOperacional = Double.parseDouble(String.valueOf(produto.get(10)));
+
+                rendimento = (rentabilidade / 100) * valorConta;
+
+                rendimento -= ((taxaOperacional / 100) * rendimento);
+
+                valorConta -= ((taxaFixa / 100) * valorConta);
+
+                valorConta += rendimento;
+
+                conta.set(4, valorConta);
+                ctrlConta.atualizar(conta);
+                Movimentacoes.extratoRendimento(codConta, rendimento);
+                break;
+            default:
+                JOptionPane.showMessageDialog(null, "Tipo de produto não encontrado");
         }
+        carregarTabelas();
     }//GEN-LAST:event_produtoProcessamentoActionPerformed
 
     private void carregarTabelaCliente() {
@@ -2245,6 +2317,7 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel40;
     private javax.swing.JLabel jLabel41;
     private javax.swing.JLabel jLabel42;
+    private javax.swing.JLabel jLabel43;
     private javax.swing.JLabel jLabel5;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JLabel jLabel7;
@@ -2281,6 +2354,7 @@ public class Tela extends javax.swing.JFrame {
     private javax.swing.JPanel painelTransferencia;
     private javax.swing.JTextField prazoVencimentoProduto;
     private javax.swing.JToggleButton produtoProcessamento;
+    private javax.swing.JTextField rentabilidadeVariavel;
     private javax.swing.JTextField rgCliente;
     private javax.swing.JButton sacarConta;
     private javax.swing.JTextField saldoConta;

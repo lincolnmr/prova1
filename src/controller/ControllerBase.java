@@ -42,6 +42,15 @@ public abstract class ControllerBase {
             return new JSONArray();
         }
     }
+    
+    public JSONArray recuperarUltimo() {
+        ObjetoBase obj = objDAO.recuperarUltimo();
+        if (obj != null) {
+            return obj.toJson();
+        } else {
+            return new JSONArray();
+        }
+    }
 
     public String[][] recuperarTodos(int quantColunas) {
         ArrayList<ObjetoBase> lista = objDAO.recuperarTodos();

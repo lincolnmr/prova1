@@ -8,8 +8,8 @@ public class Conta extends ObjetoBase {
     private String numero;
     private String agencia;
     private double saldo;
-    private boolean contaInvestimento;
-    private boolean ativo;
+    private String contaInvestimento;
+    private String ativo;
     
     public int getCodigo() {
         return codigo;
@@ -51,19 +51,19 @@ public class Conta extends ObjetoBase {
         this.saldo = saldo;
     }
 
-    public boolean isContaInvestimento() {
+    public String getContaInvestimento() {
         return contaInvestimento;
     }
 
-    public void setContaInvestimento(boolean contaInvestimento) {
+    public void setContaInvestimento(String contaInvestimento) {
         this.contaInvestimento = contaInvestimento;
     }
 
-    public boolean isAtivo() {
+    public String getAtivo() {
         return ativo;
     }
 
-    public void setAtivo(boolean ativo) {
+    public void setAtivo(String ativo) {
         this.ativo = ativo;
     }
 
@@ -75,8 +75,8 @@ public class Conta extends ObjetoBase {
         arrayJSON.add(getNumero());
         arrayJSON.add(getAgencia());
         arrayJSON.add(String.valueOf(getSaldo()));
-        arrayJSON.add(isContaInvestimento() ? "Sim" : "Não");
-        arrayJSON.add(isAtivo() ? "Sim" : "Não");
+        arrayJSON.add(getContaInvestimento());
+        arrayJSON.add(getAtivo());
         return arrayJSON;
     }
 
@@ -87,8 +87,8 @@ public class Conta extends ObjetoBase {
         setNumero(String.valueOf(dados.get(2)));
         setAgencia(String.valueOf(dados.get(3)));
         setSaldo(Double.parseDouble(String.valueOf(dados.get(4))));
-        setContaInvestimento(Boolean.parseBoolean(String.valueOf(dados.get(5))));
-        setAtivo(Boolean.parseBoolean(String.valueOf(dados.get(6))));
+        setContaInvestimento(String.valueOf(dados.get(5)));
+        setAtivo(String.valueOf(dados.get(6)));
         return this;
     }
     
@@ -100,8 +100,8 @@ public class Conta extends ObjetoBase {
         array[2] = getNumero();
         array[3] = getAgencia();
         array[4] = String.valueOf(getSaldo());
-        array[5] = isContaInvestimento() ? "Sim" : "Não";
-        array[6] = isAtivo() ? "Sim" : "Não";
+        array[5] = String.valueOf(getContaInvestimento());
+        array[6] = String.valueOf(getAtivo());
         return array;
     }
 }

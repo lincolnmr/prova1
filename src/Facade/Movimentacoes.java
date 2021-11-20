@@ -39,7 +39,7 @@ public class Movimentacoes {
 
         double valorSaida = Double.parseDouble(String.valueOf(contaOrigem.get(4))) - Double.parseDouble(valor);
         double valorEntrada = Double.parseDouble(String.valueOf(contaDestino.get(4))) + Double.parseDouble(valor);
-        
+
         contaOrigem.set(4, valorSaida);
         contaDestino.set(4, valorEntrada);
 
@@ -98,6 +98,21 @@ public class Movimentacoes {
                 arrayJSONSaida.add(codConta);
                 extrato.inserir(arrayJSONSaida);
             }
+        } catch (Exception e) {
+            System.out.println("Erro ao inserir extrato nas contas - Movimentacoes " + e);
+        }
+    }
+
+    public static void extratoRendimento(int codConta, double valor) {
+        JSONArray arrayJSONEntrada = new JSONArray();
+        try {
+            arrayJSONEntrada.add("0");
+            arrayJSONEntrada.add(FuncoesData.now());
+            arrayJSONEntrada.add("Rendimentos");
+            arrayJSONEntrada.add(valor);
+            arrayJSONEntrada.add("E");
+            arrayJSONEntrada.add(codConta);
+            extrato.inserir(arrayJSONEntrada);
         } catch (Exception e) {
             System.out.println("Erro ao inserir extrato nas contas - Movimentacoes " + e);
         }
