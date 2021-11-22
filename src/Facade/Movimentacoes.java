@@ -13,7 +13,7 @@ public class Movimentacoes {
     public static CtrlExtrato extrato = new CtrlExtrato();
 
     public static boolean transferir(int codContaOrigem, int codContaDestino, String valor) throws SQLException {
-        Connection conexao = DAO.Fabrica.getConexaoNOVA();
+        //Connection conexao = DAO.Fabrica.getConexaoNOVA();
 
         try {
             JSONArray dadosContaOrigem = conta.recuperar(codContaOrigem);
@@ -25,11 +25,11 @@ public class Movimentacoes {
             } else {
                 atualizar(dadosContaOrigem, dadosContaDestino, valor);
                 extratoTransferencia(dadosContaOrigem, dadosContaDestino, valor);
-                conexao.commit();
+                //conexao.commit();
                 JOptionPane.showMessageDialog(null, "Transferencia realizada com sucesso");
             }
         } catch (Exception e) {
-            conexao.rollback();
+            //conexao.rollback();
             System.out.println("Erro na transferencia" + e);
         }
         return true;

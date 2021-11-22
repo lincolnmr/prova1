@@ -2063,9 +2063,9 @@ public class Tela extends javax.swing.JFrame {
         if ("Sim".equals(retorno.get(5))) {
             JOptionPane.showMessageDialog(null, "Não é possível realizar depósitos em contas de investimento");
         } else {
-            double valorConta = Double.parseDouble(String.valueOf(retorno.get(4)));
+            double saldoConta = Double.parseDouble(String.valueOf(retorno.get(4)));
             double valorDeposito = Double.parseDouble(valorDepositoConta.getText());
-            retorno.set(4, String.valueOf(valorConta + valorDeposito));
+            retorno.set(4, String.valueOf(saldoConta + valorDeposito));
             ctrlConta.atualizar(retorno);
             Movimentacoes.extratoEntradaSaida(String.valueOf(retorno.get(0)), "E", valorDepositoConta.getText());
         }
@@ -2075,7 +2075,7 @@ public class Tela extends javax.swing.JFrame {
     private void sacarContaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sacarContaActionPerformed
         JSONArray retorno = ctrlConta.recuperar(Integer.parseInt(codContaSaque.getText()));
 
-        double valorConta = Double.parseDouble(String.valueOf(retorno.get(4)));
+        double saldoConta = Double.parseDouble(String.valueOf(retorno.get(4)));
         double valorSaque = Double.parseDouble(valorSaqueConta.getText());
 
         if ("Sim".equals(retorno.get(5))) {
@@ -2083,7 +2083,7 @@ public class Tela extends javax.swing.JFrame {
         } else if (Double.parseDouble(String.valueOf(retorno.get(4))) < valorSaque) {
             JOptionPane.showMessageDialog(null, "Saldo insuficiente");
         } else {
-            retorno.set(4, valorConta - valorSaque);
+            retorno.set(4, saldoConta - valorSaque);
             ctrlConta.atualizar(retorno);
             Movimentacoes.extratoEntradaSaida(String.valueOf(retorno.get(0)), "S", valorSaqueConta.getText());
             carregarTabelaConta();
@@ -2092,7 +2092,7 @@ public class Tela extends javax.swing.JFrame {
 
     private void produtoProcessamentoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_produtoProcessamentoActionPerformed
         int codConta, codProduto, prodTipoProd, codContrato;
-        double valorConta = 0, rentabilidade = 0, rendimento = 0, taxaFixa = 0, taxaOperacional = 0;
+        double saldoConta = 0, rentabilidade = 0, rendimento = 0, taxaFixa = 0, taxaOperacional = 0;
         int linha = tabelaContratarProd.getSelectedRow();
         codContrato = Integer.parseInt(String.valueOf(tabelaContratarProd.getValueAt(linha, 0)));
 
@@ -2105,28 +2105,68 @@ public class Tela extends javax.swing.JFrame {
 
         prodTipoProd = Integer.parseInt(String.valueOf(tipoProdutoo.get(0)));
 
+        saldoConta = Double.parseDouble(String.valueOf(conta.get(4)));
+        taxaFixa = Double.parseDouble(String.valueOf(produto.get(9)));
+        taxaOperacional = Double.parseDouble(String.valueOf(produto.get(10)));
+
         switch (prodTipoProd) {
             case 7:
-                // code block
+                 //renda PosFixada
+                //recebe a taxaRentabilidade do tipoProduto
+                rentabilidade = Double.parseDouble(String.valueOf(tipoProdutoo.get(3)));
+
+                //a rentabilidade deste tipo é somada ao valor da taxaSelic
+                rentabilidade = (taxaSelic + rentabilidade) / 100;
+                
+                rendimento = (saldoConta * rentabilidade);
+                
+                //taxa de operação é sobre o rendimento
+                rendimento -= ((taxaOperacional/100) * rendimento);
+              
+                //taxa fixa aplicada no valor da conta
+                saldoConta -= ((taxaFixa / 100) * saldoConta);
+
+                //valor da conta recebe o rendimento após retirada da taxaFixa
+                saldoConta += rendimento;
+
+                conta.set(4, saldoConta);
+                ctrlConta.atualizar(conta);
+                Movimentacoes.extratoRendimento(codConta, rendimento);
                 break;
             case 8:
-                // code block
+                //renda Prefixada
+                //recebe a taxaRentabilidade do tipoProduto
+                rentabilidade = Double.parseDouble(String.valueOf(tipoProdutoo.get(3)));
+                
+                rendimento = ((rentabilidade/100)* saldoConta);
+                
+                //taxa de operação é sobre o saldo
+                saldoConta -= ((taxaOperacional/100) * saldoConta);
+              
+                //taxa fixa aplicada no valor da conta
+                saldoConta -= ((taxaFixa / 100) * saldoConta);
+
+                //valor da conta recebe o rendimento após retirada da taxaFixa
+                saldoConta += rendimento;
+
+                conta.set(4, saldoConta);
+                ctrlConta.atualizar(conta);
+                Movimentacoes.extratoRendimento(codConta, rendimento);
                 break;
             case 9:
+                //renda variável
+                //rentabilidade informada pelo usuário no momento do processamento
                 rentabilidade = Double.parseDouble(rentabilidadeVariavel.getText());
-                valorConta = Double.parseDouble(String.valueOf(conta.get(4)));
-                taxaFixa = Double.parseDouble(String.valueOf(produto.get(9)));
-                taxaOperacional = Double.parseDouble(String.valueOf(produto.get(10)));
 
-                rendimento = (rentabilidade / 100) * valorConta;
+                rendimento = (rentabilidade / 100) * saldoConta;
 
                 rendimento -= ((taxaOperacional / 100) * rendimento);
 
-                valorConta -= ((taxaFixa / 100) * valorConta);
+                saldoConta -= ((taxaFixa / 100) * saldoConta);
 
-                valorConta += rendimento;
-
-                conta.set(4, valorConta);
+                saldoConta += rendimento;
+                
+                conta.set(4, saldoConta);
                 ctrlConta.atualizar(conta);
                 Movimentacoes.extratoRendimento(codConta, rendimento);
                 break;

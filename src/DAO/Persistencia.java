@@ -9,7 +9,7 @@ import model.ObjetoBase;
 
 public abstract class Persistencia {
 
-    private Connection conexao;
+    private final Connection conexao;
 
     public Persistencia() {
         conexao = Fabrica.getConexaoNOVA();
@@ -129,7 +129,7 @@ public abstract class Persistencia {
             PreparedStatement ST = conexao.prepareStatement(SQL_INSERT);
             mapearParametrosSQL(ST, obj);
             ST.executeUpdate();
-            conexao.commit();
+            commit();
             System.out.println("Inserido");
         } catch (SQLException err) {
             System.err.println("Erro ao INSERIR: " + err.getMessage());
@@ -141,7 +141,7 @@ public abstract class Persistencia {
             PreparedStatement ST = conexao.prepareStatement(SQL_UPDATE);
             mapearUpdate(ST, obj);
             ST.executeUpdate();
-            conexao.commit();
+            commit();
             System.out.println("Atualizado");
         } catch (SQLException err) {
             System.err.println("Erro ao ATUALIZAR: " + err.getMessage());
@@ -153,7 +153,7 @@ public abstract class Persistencia {
             PreparedStatement ST = conexao.prepareStatement(SQL_DELETE);
             ST.setInt(1, obj.getId());
             ST.execute();
-            conexao.commit();
+            commit();
             System.out.println("Excluido");
             return true;
         } catch (SQLException err) {
@@ -196,4 +196,13 @@ public abstract class Persistencia {
         }
         return null;
     }
+    
+    public void commit() throws SQLException {
+       try {
+            conexao.commit();
+        } catch (SQLException ex) {
+            conexao.rollback();
+            System.out.println("Erro no COMMIT: " + ex.getMessage());
+        }
+    }                                       
 }
